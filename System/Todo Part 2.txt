@@ -1,0 +1,33 @@
+https://www.canva.com/design/DAF04QbU2G8/2dL0HUU7fLDZUQBxhrhWEg/view?fbclid=IwAR0xrXjdLgtNM1trbBfzj1j0lV8Rx5SO1IBV9wsVxuOgkyZ8YyhtV0emyWc
+
+Office:
+-Dashboard
+*Task Accepts->pressed->show list of SA who accepts the Task.
+
+*Cancel-> can only be canceled if the task is not more than a day.
+
+*Change Urgent to Voluntary
+
+*if edit is clicked the input box it still be filled with their respective values
+
+-Task review
+*Task Accepts->pressed->Shot list of Sa (new tab/modal) 
+
+*List of SA in task accepts can ass review
+
+
+Student Assistant:
+-Dashboard
+*Add Time-in and Time-out in Accepted Tasks
+
+
+SA Manager:
+-Dashboard
+*Ongoing->SA->pressed->Show list of SA who accepted the task(without edit hours)
+
+*Done->SA->pressed->Show list of SA who accepted the task(with edit hours)
+
+*Done->SA->pressed->Show list of SA->pressed->Edit Hours-> shows add hours only.
+
+-SA Report
+*Change the background color of Hours rendered by how much the hours are rendered by the SA
