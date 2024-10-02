@@ -14,11 +14,11 @@ class AccountTypeMiddleware
      * @param  \Closure(\Illuminate\Http\Request): (\Symfony\Component\HttpFoundation\Response)  $next
      */
     public function handle(Request $request, Closure $next, $accountType): Response
-    {   
+    {
         $authenticatedAccountType = session()->get('account_type');
 
         if (! $authenticatedAccountType || $authenticatedAccountType !== $accountType) {
-            return redirect()->route('login');
+            return redirect()->route('landing');
         }
 
         return $next($request);

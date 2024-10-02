@@ -12,7 +12,7 @@
                             </svg>
                             <h1 style="color: rgb(109,109,109);">Are you sure?</h1>
                             <p>
-                                Do you really want to <strong>Cancel</strong> this task?<br />
+                                Do you really want to <strong>Cancel</strong> this Task.<br />
 
                             </p>
                         </div>

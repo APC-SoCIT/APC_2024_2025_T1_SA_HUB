@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('middle_initial');
             $table->string('gender');
-            $table->integer('contact_number');
+            $table->string('contact_number');
             $table->date('birth_date');
             $table->string('birth_place');
             $table->string('course_program');

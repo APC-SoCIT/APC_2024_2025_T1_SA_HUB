@@ -1,4 +1,5 @@
 import './bootstrap';
+import 'bootstrap-icons/font/bootstrap-icons.css';
 
 $(document).ready(function() {
     $('#addTaskForm').submit(function(event) {
@@ -14,30 +15,30 @@ $(document).ready(function() {
             dataType: 'json',
             success: function(response) {
                 if (response.success) {
-                    console.log("Success Response:", response); 
+                    console.log("Success Response:", response);
                     //$('#addTaskModal').modal('hide'); // Close the modal
                     // Handle successful task addition:
                     // - Display a success message
                     // - Update your task list (if applicable)
-                } 
+                }
             },
             error: function(response) {
                 console.log("Error Response:", response);
 
-                /*if (response.status === 422) { // Validation errors 
+                /*if (response.status === 422) { // Validation errors
                     handleValidationErrors(response.responseJSON.errors);
                 } else {
                     // Handle other types of errors (server error, etc.)
-                    displayGenericError(); 
+                    displayGenericError();
                 }*/
             }
         });
     });
 
     function handleValidationErrors(errors) {
-        console.log("Errors:", errors);    
+        console.log("Errors:", errors);
     }
-    
+
 
     function clearErrors() {
         $('.form-control').removeClass('is-invalid');
@@ -46,6 +47,6 @@ $(document).ready(function() {
 
     function displayGenericError() {
         // Example: Display simple alert
-        alert('An error occurred. Please try again later.');  
+        alert('An error occurred. Please try again later.');
     }
 });

@@ -15,9 +15,9 @@
                         <table class="table table-hover">
                             <thead>
                                 <tr>
-                                    <th scope="col" style="background: #d9d9d9;">Task No.</th>
-                                    <th scope="col" style="background: #d9d9d9;">Date &amp; Time</th>
-                                    <th scope="col" style="background: #d9d9d9;">Program</th>
+                                    <th class="table-accent1 ">Task No.</th>
+                                    <th class="table-accent1 ">Date &amp; Time</th>
+                                    <th class="table-accent1 ">Program</th>
                                     <th style="background: #d9d9d9;">Task</th>
                                     <th style="background: #d9d9d9;">Hours</th>
                                     <th style="background: #d9d9d9;">Note</th>
@@ -41,7 +41,7 @@
                     </div>
                 </section>
             </div>
-        
+
         @if($salists->count() >= 1)
             @include('modals.sa_list')
         @endif

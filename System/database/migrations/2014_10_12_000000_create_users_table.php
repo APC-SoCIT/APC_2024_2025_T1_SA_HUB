@@ -15,7 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('id_number')->unique();
             $table->string('username')->unique();
-            $table->string('account_type');
+            $table->string('faculty');
+            // $table->string('account_type');
             $table->string('email')->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');

@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SaTaskTimeLog extends Model
 {
-    protected $table = 'user_tasks_timelog'; 
+    protected $table = 'user_tasks_timelog';
 
     protected $fillable = [
         'task_status',
@@ -20,4 +20,10 @@ class SaTaskTimeLog extends Model
         'is_Approved_out',
         'feedback',
     ];
+
+    public function task()
+    {
+        return $this->belongsTo(Task::class);
+    }
+
 }

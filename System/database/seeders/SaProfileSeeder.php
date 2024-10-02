@@ -48,7 +48,7 @@ class SaProfileSeeder extends Seeder
                 'birth_place' => 'Pasig City, Philippines',
                 'course_program' => 'BSBA',
             ],
-            
+
         ]);
     }
 }

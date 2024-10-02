@@ -55,7 +55,7 @@
                             <tbody>
                                 @if($saLists->count() == 0)
                                     <tr>
-                                            <td data-label="Attributes" scope="row" colpan="6"><strong> None </strong></td>
+                                            <td data-label="Attributes" scope="row" colpan="6"><strong> No On-Going SA with Task </strong></td>
                                             <td></td>
                                             <td></td>
                                             <td></td>                                        
@@ -81,7 +81,7 @@
                             <tbody>
                                 @if($saLists->count() == 0)
                                     <tr>
-                                            <td data-label="Attributes" scope="row" colpan="6"><strong> None </strong></td>
+                                            <td data-label="Attributes" scope="row" colpan="6"><strong> No Completed SA Task </strong></td>
                                                                                   
                                     </tr>
                                 @else

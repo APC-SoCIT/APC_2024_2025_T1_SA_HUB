@@ -1,0 +1,362 @@
+:root {
+    --accent1: #e7af41;
+    --accent2: #00163e;
+    --accent3: #faf3d8;
+    --background1: #f4f4f4;
+    --green-accent: #d1e7dd;
+    /* #{'--'+prefix+'offcanvas-width'}: #{$offcanvas-horizontal-width}; */
+    /* --bs-offcanvas-width: 250px !important; #e7af41*/
+}
+
+body {
+    font-family: Roboto, Arial, sans-serif;
+}
+
+/* Initially hide the page with a fade effect */
+/* .fade {
+    opacity: 0;
+    transition: opacity 0.5s ease-in-out;
+} */
+
+/* When the page is fully visible */
+.fade-in {
+    opacity: 1;
+}
+
+.offcanvas {
+    --bs-offcanvas-width: 250px !important;
+}
+
+.offcanvas .offcanvas-title {
+    line-height: 20px !important;
+}
+
+.offcanvas .offcanvas-title em {
+    font-size: .8rem;
+}
+
+/* Hide content on small screens (below 768px) */
+@media (max-width: 767px) {
+    .content {
+        display: none;
+        /* Hide the main content */
+    }
+
+    .small-screen-message {
+        display: block;
+        /* Show a warning message for small screens */
+    }
+
+    .small-screen-message p {
+        text-align: center;
+        padding: 20px;
+        font-size: 18px;
+        background-color: #f8d7da;
+        color: #721c24;
+    }
+}
+
+/* Show content on medium to large screens */
+@media (min-width: 768px) {
+    .content {
+        display: block;
+        /* Display main content */
+    }
+
+    .small-screen-message {
+        display: none;
+        /* Hide the warning message */
+    }
+}
+
+
+/* .landing{
+    background-image: url('../');
+} */
+
+.text-accent1 {
+    color: var(--accent1);
+}
+
+.text-accent2 {
+    color: var(--accent2);
+}
+
+.text-accent3 {
+    color: var(--accent3);
+}
+
+.border-accent1 {
+    border: solid 2px var(--accent1);
+}
+
+.border-accent2 {
+    border: solid 2px var(--accent2);
+}
+
+.border-accent3 {
+    border: solid 2px var(--accent3);
+}
+
+.border-accent1 {
+    border: solid 2px var(--accent1);
+}
+
+.border-accent2 {
+    border: solid 2px var(--accent2);
+}
+
+.border-accent3 {
+    border: solid 2px var(--accent3);
+}
+
+.border-bottom-accent1 {
+    border-bottom: solid 2px var(--accent1);
+}
+
+.border-bottom-accent2 {
+    border-bottom: solid 2px var(--accent2);
+}
+
+.border-bottom-accent3 {
+    border-bottom: solid 2px var(--accent3);
+}
+
+.outlined-text-accent1 {
+    text-shadow:
+        -1px -1px 0 var(--accent1),
+        1px -1px 0 var(--accent1),
+        -1px 1px 0 var(--accent1),
+        1px 2px 0 var(--accent1);
+}
+
+.outlined-text-accent2 {
+    text-shadow:
+        -1px -1px 0 var(--accent2),
+        1px -1px 0 var(--accent2),
+        -1px 1px 0 var(--accent2),
+        1px 2px 0 var(--accent2);
+}
+
+.background-accent1 {
+    background-color: var(--accent1);
+}
+
+.background-accent2 {
+    background-color: var(--accent2);
+}
+
+.background-accent3 {
+    background-color: var(--accent3);
+}
+
+.main-background {
+    background-blend-mode: overlay;
+    background: rgba(255, 255, 255, 0.897) url(../images/logo2.png) center no-repeat;
+    background-size: contain;
+    height: 90vh !important;
+    width: 90%;
+    margin: auto;
+}
+
+.landing-text {
+    /* position: absolute; */
+    top: 20%;
+    font-size: 100px;
+}
+
+.landing-text em {
+    /* position: absolute; */
+    font-size: 100px;
+    font-style: normal;
+}
+
+.selection-hover:hover {
+    /* background-color: var(--accent3); */
+    transform: translateY(-15px);
+    /* Slight lift effect */
+    /* box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3); */
+}
+
+svg.landing-img {
+    /* width: 20px; */
+    /* height: 20px !important; */
+    max-width: 100%;
+    height: auto;
+}
+
+.card-selection div span {
+    font-size: 25px !important;
+    /* width: 219px; */
+    max-width: 100%;
+    height: auto;
+}
+
+.imgleft {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    /* min-width: 30%; */
+    max-width: 50%;
+    z-index: -1;
+}
+
+.imgright {
+    position: absolute;
+    right: 0;
+    top: 3%;
+    z-index: -1;
+}
+
+.btn.background-accent1:hover {
+    background-color: var(--accent3);
+    color: var(--accent2);
+    border: var(--accent1) solid 1px;
+}
+
+.btn.background-accent2 {
+    border: var(--accent1), solid, 1px;
+}
+
+.btn.background-accent2:hover {
+    background-color: var(--accent1);
+    color: var(--accent2);
+    border: var(--accent2) solid 1px;
+}
+
+.btn.background-green-accent {
+    /* background-color: var(--green-accent); */
+    border: solid, 2px;
+}
+
+.btn.background-green-accent:hover {
+    /* background-color: var(--green-accent); */
+    color: var(--accent1) !important;
+    /* border: var(--accent1) solid 2px; */
+}
+
+.container .login {
+    /* position: absolute; */
+    top: 40% !important;
+}
+
+.container .login-back {
+    position: relative;
+    top: 40% !important;
+}
+
+@media screen and (max-width: 1366px){
+    .container .login {
+        /* position: absolute; */
+        top: 5% !important;
+    }
+    .container .login-back {
+        position: relative;
+        top: 5% !important;
+    }
+}
+
+.login-form {
+    min-width: 75%;
+}
+
+.btn.text-accent1.forgot-password {
+    text-decoration: underline;
+    text-underline-offset: 5px;
+}
+
+.btn.text-accent1.forgot-password:hover {
+    color: #ffd174;
+    text-decoration: none;
+    text-underline-offset: 5px;
+}
+
+.profile-divider {
+    border-bottom-style: dashed !important;
+    border-color: var(--accent2);
+}
+
+.table-border {
+    /* background-color: var(--accent1); */
+    border: 2px solid var(--accent2);
+    color: var(--accent2);
+    border-collapse: separate !important;
+}
+
+.table-border2 {
+    /* background-color: var(--accent1); */
+    border: 2px solid var(--accent2);
+}
+
+/* Pagination Styles */
+/* Style the pagination links */
+.pagination .page-link {
+    color: var(--accent2);
+    /* Default link color */
+    background-color: var(--accent1);
+    /* Background color */
+    border-color: var(--accent2);
+    /* Border color */
+}
+
+/* Style for the active page link */
+.pagination .page-item.active .page-link {
+    z-index: 1;
+    color: var(--accent3);
+    /* Text color of the active link */
+    background-color: var(--accent2);
+    /* Background color for active page */
+    border-color: var(--accent2);
+    /* Border color for active page */
+}
+
+/* Style for hover and focus states */
+.pagination .page-link:hover {
+    color: var(--accent1);
+    /* Hover link color */
+    background-color: var(--accent2);
+    /* Hover background */
+    border-color: var(--accent2);
+}
+
+/* Style for disabled page link */
+.pagination .page-item.disabled .page-link {
+    color: #6c757d;
+    pointer-events: none;
+    background-color: var(--accent3);
+    border-color: var(--accent2);
+}
+
+.form-check-input:checked {
+    background-color: var(--accent2);
+    border-color: var(--accent2);
+}
+
+.btn.going {
+    width: 500px;
+    padding: 1rem 0rem;
+    font-weight: bold;
+    font-size: 1em;
+}
+
+.btn.going.active-going {
+    border: 5px solid var(--accent2) !important;
+    pointer-events: none;
+}
+
+.btn.opacity {
+    opacity: .7;
+}
+
+.btn.opacity:hover {
+    opacity: 1;
+}
+
+.disable{
+    pointer-events: none;
+    opacity: .8;
+}
+
+.sticky-offset{
+    margin-bottom: -150px;
+  }

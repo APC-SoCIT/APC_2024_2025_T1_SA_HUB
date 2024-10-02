@@ -2,11 +2,13 @@
 
 use Illuminate\Support\Facades\Route;
 
-use App\Http\Controllers\LoginController;
+use App\Http\Controllers\Controller;
 use App\Http\Controllers\SaDashboardController;
 use App\Http\Controllers\SaManagerDashboardController;
 use App\Http\Controllers\OfficeAdminDashboardController;
+use App\Http\Controllers\GuidanceController;
 //use App\Http\Controllers\TaskController;
+use App\Http\Controllers\Auth\LoginController;
 
 /*
 |--------------------------------------------------------------------------
@@ -25,15 +27,16 @@ Route::get('/', function () {
 */
 
 //Login Route
-Route::get('/', [LoginController::class, 'index'])->name('login');
-Route::post('/authenticate', [LoginController::class, 'authenticate'])->name('authenticate');
+Route::get('/', [Controller::class, 'index'])->name('landing');
+
+// Route::get('/', [Controller::class, 'home'])->name('landing');
+// Route::get('/login', [LoginController::class, 'login'])->name('login');
+// Route::post('/authenticate', [LoginController::class, 'authenticate'])->name('authenticate');
 
 //Logout Route
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+// Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::group(['middleware' => ['auth']], function () {
-    
-
 
 //Student Assistant Routes
 Route::get('/student_assistant/dashboard', [SaDashboardController::class, 'index'])->name('sa.dashboard');
@@ -56,9 +59,12 @@ Route::put('/sa_manager/add_hours', [SAManagerDashboardController::class, 'editH
 //Route::get('/office_admin/sa-report-completed', [OfficeAdminDashboardController::class, 'saReportCompleted'])->name('office.sa.completed');
 Route::get('/office_admin/dashboard/', [OfficeAdminDashboardController::class, 'dashboard'])->name('office.dashboard');
 Route::get('/office_admin/dashboard/task_view', [OfficeAdminDashboardController::class, 'taskView'])->name('office.admin.taskview.dashboard');
-Route::put('/office_admin/{task}/edit', [OfficeAdminDashboardController::class, 'update'])->name('office.edit');
+// Route::put('/office_admin/{task}/update', [OfficeAdminDashboardController::class, 'update'])->name('office.update');
 Route::post('/office_admin/add', [OfficeAdminDashboardController::class, 'store'])->name('office.add');
 Route::get('/office_admin/add_task', [OfficeAdminDashboardController::class, 'addtask'])->name('office.add.task');
+// Route::post('/office_admin/add', [OfficeAdminDashboardController::class, 'store'])->name('office.add');
+Route::put('/office_admin/{task}', [OfficeAdminDashboardController::class, 'update'])->name('office.update');
+Route::get('/office_admin/{task}/edit', [OfficeAdminDashboardController::class, 'edit'])->name('office.edit');
 Route::post('/office_admin/{task}/delete', [OfficeAdminDashboardController::class, 'delete'])->name('office.delete');
 Route::post('/office_admin/{task}/cancel', [OfficeAdminDashboardController::class, 'cancel'])->name('office.cancel');
 Route::get('/office_admin/{taskId}/sa_list', [OfficeAdminDashboardController::class,'taskSaList'])->name('office.saList');
@@ -67,8 +73,17 @@ Route::put('/office_admin/feedback', [OfficeAdminDashboardController::class, 'ad
 
 //Reports
 Route::get('/sa-report/{status?}', [OfficeAdminDashboardController::class, 'saReport'])->name('report.saReport');
-Route::get('/office-report/', [OfficeAdminDashboardController::class, 'officeReport'])->name('report.officeReport');
+Route::get('/office-report', [OfficeAdminDashboardController::class, 'officeReport'])->name('report.officeReport');
 
 //Route::resource('tasks', TaskController::class);
+// Guidance Routes
+Route::get('/guidance_office/dashboard', [GuidanceController::class, 'dashboard'])->name('guidance.dashboard');
 
 });
+
+Auth::routes(['verify' => true]);
+// routes/web.php
+Route::get('/{id}/login', [LoginController::class, 'showLoginForm'])->name('login.page');
+
+
+// Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');

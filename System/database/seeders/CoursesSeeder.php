@@ -14,7 +14,7 @@ class CoursesSeeder extends Seeder
     public function run(): void
     {
         //
-        DB::table('courses_tables')->insert([
+        DB::table('courses')->insert([
             [
                 'campus_id' => 'Makati',
                 'code' => 'IT123',

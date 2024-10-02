@@ -10,7 +10,7 @@
     <div style="padding: 3em;">
     <div class="d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 100%;height: 4em;">
         <h3>List of Student Assistant</h3>
-            
+
     </div>
     @if (session('success'))
                 <div class="alert alert-success alert-dismissible fade show" role="alert" aria-label="Close">
@@ -20,35 +20,35 @@
             @endif
     <section>
         <div class="d-xl-flex justify-content-xl-center align-items-xl-center" style="width: 100%;height: 3em;padding: 8px;background: #d9d9d9;margin: 0px;">
-            <h5>Task {{$taskId}}</h5>
+            <h5 class="text-center">Task {{$taskId}}</h5>
         </div>
         <div class="table-responsive" style="padding: 1em;">
-            <table class="table table-hover">
-                <thead>
+            <table class="table table-hover table-border rounded">
+                <thead class="background-accent1">
                     <tr>
-                        <th scope="col" style="background: #d9d9d9;">Student No.</th>
-                        <th scope="col" style="background: #d9d9d9;">SA Name</th>
-                        <th scope="col" style="background: #d9d9d9;">Course</th>
-                        <th style="background: #d9d9d9;">Time In</th>
+                        <th class="table-border2 rounded">Student No.</th>
+                        <th class="table-border2 rounded">SA Name</th>
+                        <th class="table-border2 rounded">Course</th>
+                        <th class="table-border2 rounded">Time In</th>
                         <!-- <th style="background: #d9d9d9;">Time In Status</th> -->
-                        <th style="background: #d9d9d9;">Time Out</th>
+                        <th class="table-border2 rounded">Time Out</th>
                         <!-- <th style="background: #d9d9d9;">Time Out Status</th> -->
-                        <th style="background: #d9d9d9;">Rendered Hours</th>
-                        <th style="background: #d9d9d9;">Feedback</th>
-                        <th style="background: #d9d9d9;">Action</th>
+                        <th class="table-border2 rounded">Rendered Hours</th>
+                        <th class="table-border2 rounded">Feedback</th>
+                        <th class="table-border2 rounded">Action</th>
                     </tr>
                 </thead>
-                <tbody>
+                <tbody class="background-accent3">
                     @foreach($saLists as $saList)
                         <tr>
-                            <td data-label="Attributes" scope="row">{{$saList->user_id}}</td>
-                            <td data-label="Base Class">{{$saList->first_name}} {{$saList->last_name}}</td>
-                            <td data-label="Simulated Case">{{$saList->course_program}}</td>
-                            <td>
+                            <td class="table-border2 rounded text-center">{{$saList->user_id}}</td>
+                            <td class="table-border2 rounded text-center">{{$saList->first_name}} {{$saList->last_name}}</td>
+                            <td class="table-border2 rounded text-center">{{$saList->course_program}}</td>
+                            <td class="table-border2 rounded text-center">
                                 {{$saList->timein == null ? 'No Time-In Yet' : $saList->timein}}
                             </td>
                             <!--<td>
-                                <button class="btn 
+                                <button class="btn
                                     @if($saList->is_Approved_in === null)
                                         btn-danger disabled
                                     @elseif($saList->is_Approved_in === 'Approved')
@@ -58,7 +58,7 @@
                                     @endif
                                     dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false"
                                     >
-                                    
+
                                     @if($saList->is_Approved_in === null)
                                         No Time in Yet
                                     @elseif($saList->is_Approved_in === 'Pending')
@@ -76,11 +76,11 @@
                                     </li>
                                 </ul>
                             </td>-->
-                            <td>
+                            <td class="table-border2 rounded text-center">
                                 {{$saList->timeout == null ? 'No Time-Out Yet' : $saList->timeout}}
                             </td>
                             <!--<td>
-                                <button class="btn 
+                                <button class="btn
                                     @if($saList->is_Approved_out === null)
                                         btn-danger disabled
                                     @elseif($saList->is_Approved_out === 'Approved')
@@ -108,17 +108,17 @@
                                     </li>
                                 </ul>
 
-                                
+
                             </td>-->
-                            
-                            <td>
+
+                            <td class="table-border2 rounded text-center">
                                 {{ $saList->total_hours <= 0 ? 'Not Yet Started' : $saList->total_hours.' Hr(s)'}}
                             </td>
-                            <td>
+                            <td class="table-border2 rounded text-center">
                                 {{ $saList->feedback ? $saList->feedback : 'No Feedback'}}
                             </td>
-                            <td>
-                                <button class="btn btn-info" type="button" style="font-size: 13px;color: rgb(0,0,0);font-weight: bold;border-style: none;" data-bs-toggle="modal" data-bs-target="#editHoursModal-{{ $saList->timelogId }}" {{$saList->timeout ? '' : 'disabled'}}>
+                            <td class="table-border2 rounded text-center">
+                                <button class="btn background-accent1 {{$saList->timeout ? '' : 'disable'}}" type="button" data-bs-toggle="modal" data-bs-target="#editHoursModal-{{ $saList->timelogId }}">
                                 {{$saList->timeout ? 'Edit Hour/s' : 'No Time-out'}}
                                 </button>
                                 @include('modals.edit_hours')
