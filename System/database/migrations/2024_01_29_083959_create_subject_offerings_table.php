@@ -13,10 +13,12 @@ return new class extends Migration
     {
         Schema::create('subject_offerings', function (Blueprint $table) {
             $table->id();
-            $table->unsignedInteger('school_level_id');
-            $table->string('term_id', 255);
-            $table->string('subject_id', 255);
             $table->string('subject_code', 255);
+            $table->string('subject_name', 255);
+            $table->unsignedInteger('school_level_id'); // year of
+            $table->string('course_id'); //(this will be the subject of the specific course) foreign key from courses table
+            $table->string('subject_details_id'); //foreign key from subject_offering_details table
+            $table->string('term_id', 255);
             $table->string('section', 255);
             $table->string('type', 255); // e.g., lecture, lab
             $table->string('day_id', 255);

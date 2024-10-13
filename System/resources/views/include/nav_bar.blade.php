@@ -1,4 +1,4 @@
-        <nav class="navbar navbar-light navbar-expand-sm background-accent1 border-bottom-accent2 sticky-top">
+        <nav class="navbar navbar-light navbar-expand-sm background-accent1 shadow border-bottom-accent2 sticky-top">
             <div class="container-fluid" style="min-height: 20px">
                 @if(!Auth::user()->hasRole('guidance_office'))
                 <button class="btn btn-primary" data-bss-hover-animate="rubberBand" type="button"

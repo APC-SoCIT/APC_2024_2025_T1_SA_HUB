@@ -11,7 +11,7 @@ class Task extends Model
 
     protected $fillable = [
         'isActive',
-        // 'office_id',
+        'office_id',
         'preffred_program',
         'start_date',
         'start_time',
@@ -23,4 +23,15 @@ class Task extends Model
         'note',
         'assigned_office'
     ];
+
+    public function officeUser(){
+        return $this->belongsTo(User::class, 'office_id', 'id');
+    }
+
+    public function studentAssistants()
+    {
+        return $this->belongsToMany(User::class, 'user_tasks_timelog')
+            ->withPivot('task_status') // Assuming 'status' is a column in the pivot table
+            ->withTimestamps();
+    }
 }

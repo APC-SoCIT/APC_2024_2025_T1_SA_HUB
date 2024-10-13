@@ -27,13 +27,13 @@ class OfficeAdminDashboardController extends Controller
     //View all tasks - not used
     public function index()// Does not do anything
     {
-        $tasks = Task::all();
+        $tasks = Task::where('office_id', '=', Auth::user()->id);
         return view('office.office_dashboard', compact('tasks'));
     }
 
     public function program()
     {
-        $program = Courses::where('is_offered',true)->get();
+        $program = Courses::where('is_offered', true)->get();
         return $program;
     }
 
@@ -49,24 +49,32 @@ class OfficeAdminDashboardController extends Controller
         //$tasks = Task::all();
         $courses = $this->program();
         $user = $this->getuserID();
-        $tasks = Task::where('isActive', true)->get();
+        $tasks = Task::where('isActive', true)->where('office_id', '=', Auth::user()->id_number)->get();
         $tasksWithInfo = $this->processTasks($tasks);
-        return view('office.office_dashboard', compact('user','tasksWithInfo','courses'));
+        return view('office.office_dashboard', compact('user', 'tasksWithInfo', 'courses'));
+    }
+
+    public function history()
+    {
+        $taskCompleted = SaTaskTimeLog::where('task_status', 2)
+            ->distinct('task_id')->get();
+
+        return view('office.office_history', compact('taskCompleted'));
     }
 
     private function processTasks($tasks)
     {
         $processedTasks = [];
-        foreach($tasks as $task) {
+        foreach ($tasks as $task) {
             $startTime = strtotime($task->start_time); // Convert to Unix timestamp
             $endTime = strtotime($task->end_time);
             $task->startTimeFormatted = date("h:i A", strtotime($task->start_time));
             $task->endTimeFormatted = date("h:i A", strtotime($task->end_time));
-            $task->totalHours = round(($endTime- $startTime) / 3600, 1); // Assumes these are timestamps
+            $task->totalHours = round(($endTime - $startTime) / 3600, 1); // Assumes these are timestamps
             $task->saCount = DB::table('user_tasks_timelog')
-                                ->where('task_id', $task->id)
-                                ->where('task_status', 1)
-                                ->count();
+                ->where('task_id', $task->id)
+                ->where('task_status', 1)
+                ->count();
             $processedTasks[] = $task;
         }
         return $processedTasks;
@@ -84,41 +92,27 @@ class OfficeAdminDashboardController extends Controller
         return $user;
     }
 
-    public function saCounter($num_sa,$task)
+    public function saCounter($num_sa, $task)
     {
         $saCount = DB::table('user_tasks_timelog')
-        ->where('task_id',$task->id)
-        ->where('task_status',1)
-        ->count();
-        if ($saCount < $num_sa){
+            ->where('task_id', $task->id)
+            ->where('task_status', 1)
+            ->count();
+        if ($saCount < $num_sa) {
             session()->flash('success', 'Student Assistant full!!');
         }
     }
 
-    public function taskSaList(Request $request)
+    public function taskSaList(Request $request, $id)
     {
         $user = $this->getuserID();
-        $taskId = $request->route('taskId');
-        $saLists = User::join('user_tasks_timelog','users.id','=','user_tasks_timelog.user_id')
-        ->join('tasks','user_tasks_timelog.task_id','=','tasks.id')
-        ->join('sa_profiles','users.id_number','=','sa_profiles.user_id')
-        ->select(
-            'user_tasks_timelog.id AS timelogId',
-            'user_tasks_timelog.feedback',
-            'user_tasks_timelog.total_hours',
-            'sa_profiles.user_id',
-            'sa_profiles.first_name',
-            'sa_profiles.last_name',
-            'sa_profiles.course_program',
-            DB::raw('DATE_FORMAT(user_tasks_timelog.time_in, "%H:%i") AS timein'),
-            DB::raw('DATE_FORMAT(user_tasks_timelog.time_out, "%H:%i") AS timeout'),
-        )
-        ->where('tasks.id','=', $taskId)
-        //->groupBy( 'sa_profiles.user_id','sa_profiles.first_name', 'sa_profiles.last_name', 'sa_profiles.course_program','timein','timeout' )
-        ->orderBy('user_tasks_timelog.updated_at', 'DESC')
-        ->get();
-            // dd($saLists);
-        return view('office.salist_task', compact('saLists','user','taskId'));
+        $saLists = SaTaskTimeLog::where('task_id', '=', $id)
+            ->where('task_status', '=', 1)
+            ->distinct()
+            ->latest()
+            ->get();
+        $taskId = $id;
+        return view('office.salist_task', compact('saLists', 'user', 'taskId'));
     }
 
     public function addFeedback(Request $request)
@@ -144,40 +138,55 @@ class OfficeAdminDashboardController extends Controller
 
     public function getSaData($status)
     {
-        $query = User::join('user_tasks_timelog','users.id','=','user_tasks_timelog.user_id')
-        ->join('sa_profiles','users.id_number','=','sa_profiles.user_id')
-        ->select(
-            'users.id_number',
-            'sa_profiles.first_name',
-            'sa_profiles.last_name',
-            'users.email',
-            DB::raw('SUM(user_tasks_timelog.total_hours) as total_hours')
-        )
-        ->where('user_tasks_timelog.total_hours','!=', null)
-        ->groupBy('users.id_number', 'sa_profiles.first_name', 'sa_profiles.last_name', 'users.email'); // Group by these fields
-
         if ($status === 'ongoing') {
-            $query->having('total_hours', '<=', 89);
-        }elseif ($status === 'completed') {
-            $query->having('total_hours','>=', 90 );
+            $task_status = 1;
+        } elseif ($status === 'completed') {
+            $task_status = 2;
         }
+        $query = User::join('user_tasks_timelog', 'users.id', '=', 'user_tasks_timelog.user_id')
+            ->join('sa_profiles', 'users.id', '=', 'sa_profiles.user_id')
+            ->select(
+                'users.id_number',
+                'sa_profiles.first_name',
+                'sa_profiles.last_name',
+                'users.email',
+                DB::raw('SUM(user_tasks_timelog.total_hours) as total_hours')
+            )
+            ->where('user_tasks_timelog.task_status', '=', $task_status)
+            ->groupBy('users.id_number', 'sa_profiles.first_name', 'sa_profiles.last_name', 'users.email')
+            ->get(); // Group by these fields
 
-        return $query->get();
+        // dd($task_status);
+
+        return $query;
     }
 
-    public function saReport($status="completed")
+    public function saReport($status = "completed")
     {
         $user = $this->getuserID();
-        $saLists = $this->getSaData($status);
+        // $saLists = $this->getSaData($status);
+        if ($status === 'ongoing') {
+            $task_status = 1;
+        } elseif ($status === 'completed') {
+            $task_status = 2;
+        }
 
+        $saLists = SaTaskTimeLog::select(
+            'user_id',
+            DB::raw('SUM(total_hours) as total_rendered_hours'),
+            DB::raw('COUNT(DISTINCT task_id) as total_tasks_accepted'),
+        )
+            ->where('task_status', '=', $task_status)
+            ->groupBy('user_id')
+            ->get();
 
-        return view('reports.sa_report', ['status'=>$status,'saLists'=>$saLists, 'user'=>$user]);
+        return view('reports.sa_report', ['status' => $status, 'saLists' => $saLists, 'user' => $user]);
     }
 
     public function officeReport()
     {
         $user = $this->getuserID();
-        $officeLists = User::join('tasks', 'users.id', '=', 'tasks.office_id') // Users who posted tasks
+        $officeLists = User::join('tasks', 'users.id_number', '=', 'tasks.office_id') // Users who posted tasks
             ->join('user_tasks_timelog', 'tasks.id', '=', 'user_tasks_timelog.task_id') // Tasks with logged work
             ->select(
                 'users.faculty',
@@ -190,7 +199,7 @@ class OfficeAdminDashboardController extends Controller
             ->get();
 
 
-        return view('reports.office_report', ['officeLists'=>$officeLists,'user'=>$user]);
+        return view('reports.office_report', ['officeLists' => $officeLists, 'user' => $user]);
     }
 
 
@@ -241,13 +250,13 @@ class OfficeAdminDashboardController extends Controller
 
         if ($validator->fails()) {
             return redirect()->back()
-                         ->withErrors($validator)
-                         ->withInput(); // Preserve user input
+                ->withErrors($validator)
+                ->withInput(); // Preserve user input
         }
 
         $validatedData = $validator->validated(); // Get validated data
         $task = new Task($validatedData);
-        $task->office_id = $user->id;
+        $task->office_id = $user->id_number;
         $task->assigned_office = $user->faculty;
 
 
@@ -265,7 +274,12 @@ class OfficeAdminDashboardController extends Controller
     {
         // Find SAs with matching program (if provided)
         $eligibleSAs = SaProfile::where('course_program', $data['preffred_program'])
-                               ->get();
+            ->whereDoesntHave('offenses', function ($query) {
+                // Exclude SAs under probation for major offenses
+                $query->where('type', 'major')
+                    ->where('status', 'probation');
+            })
+            ->get();
         // Find SAs with available time slots
         $availableSAs = $this->findSAsWithAvailability($eligibleSAs, $task);
         // Assign the task
@@ -274,26 +288,26 @@ class OfficeAdminDashboardController extends Controller
 
     private function findSAsWithAvailability($eligibleSAs, Task $task)
     {
-        return $eligibleSAs->filter(function($sa) use ($task) {
+        return $eligibleSAs->filter(function ($sa) use ($task) {
             // Schedule Conflict Check (Existing Code)
             $hasScheduleConflict = DB::table('student_schedules')
-            ->join('subject_offerings', 'subject_offerings.id', '=', 'student_schedules.subject_offering_id')
-            ->join('subject_offering_details', 'subject_offering_details.subject_offering_id', '=', 'subject_offerings.id')
-            ->where('student_schedules.student_id', $sa->id) // Replace with how you get the SA's ID
-            ->where(function ($query) use ($task) {
-                $query->where(function($query) use ($task) {
+                ->join('subject_offerings', 'subject_offerings.id', '=', 'student_schedules.subject_offering_id')
+                ->join('subject_offering_details', 'subject_offering_details.subject_offering_id', '=', 'subject_offerings.id')
+                ->where('student_schedules.student_id', $sa->id) // Replace with how you get the SA's ID
+                ->where(function ($query) use ($task) {
+                    $query->where(function ($query) use ($task) {
                         // Task starts within existing schedule
                         $query->whereRaw('SUBSTRING_INDEX(subject_offering_details.time_constraints, "-", 1) BETWEEN ? AND ?', [$task->start_time, $task->end_time]);
                     })
-                    ->orWhere(function($query) use ($task) {
-                        // Task ends within existing schedule
-                        $query->whereRaw('SUBSTRING_INDEX(subject_offering_details.time_constraints, "-", -1) BETWEEN ? AND ?', [$task->start_time, $task->end_time]);
-                    })
-                    ->orWhere(function($query) use ($task) {
-                        // Task surrounds an existing schedule
-                        $query->whereRaw('SUBSTRING_INDEX(subject_offering_details.time_constraints, "-", 1) < ?', [$task->start_time])
-                            ->whereRaw('SUBSTRING_INDEX(subject_offering_details.time_constraints, "-", -1) > ?', [$task->end_time]);
-                    });
+                        ->orWhere(function ($query) use ($task) {
+                            // Task ends within existing schedule
+                            $query->whereRaw('SUBSTRING_INDEX(subject_offering_details.time_constraints, "-", -1) BETWEEN ? AND ?', [$task->start_time, $task->end_time]);
+                        })
+                        ->orWhere(function ($query) use ($task) {
+                            // Task surrounds an existing schedule
+                            $query->whereRaw('SUBSTRING_INDEX(subject_offering_details.time_constraints, "-", 1) < ?', [$task->start_time])
+                                ->whereRaw('SUBSTRING_INDEX(subject_offering_details.time_constraints, "-", -1) > ?', [$task->end_time]);
+                        });
                 })
                 ->exists();
 
@@ -302,21 +316,21 @@ class OfficeAdminDashboardController extends Controller
                 ->join('tasks', 'user_tasks_timelog.task_id', '=', 'tasks.id') // Join with the 'tasks' table
                 ->where('user_tasks_timelog.user_id', $sa->id)
                 ->where(function ($query) use ($task) {
-                    $query->where(function($query) use ($task) {
-                            // Task starts within existing accepted task
-                            $query->whereRaw('tasks.start_time BETWEEN ? AND ?', [$task->start_time, $task->end_time]);
-                        })
-                        ->orWhere(function($query) use ($task) {
+                    $query->where(function ($query) use ($task) {
+                        // Task starts within existing accepted task
+                        $query->whereRaw('tasks.start_time BETWEEN ? AND ?', [$task->start_time, $task->end_time]);
+                    })
+                        ->orWhere(function ($query) use ($task) {
                             // Task ends within existing accepted task
                             $query->whereRaw('tasks.end_time BETWEEN ? AND ?', [$task->start_time, $task->end_time]);
                         })
-                        ->orWhere(function($query) use ($task) {
+                        ->orWhere(function ($query) use ($task) {
                             // Task surrounds an existing accpeted task
                             $query->whereRaw('tasks.start_time < ?', [$task->start_time])
                                 ->whereRaw('tasks.end_time > ?', [$task->end_time]);
                         });
-                    })
-                    ->exists();
+                })
+                ->exists();
 
             return !($hasScheduleConflict || $hasTaskConflict);
         });
@@ -335,10 +349,12 @@ class OfficeAdminDashboardController extends Controller
                 ->value('id');
 
             // Check if SA has already accepted this task
-            if (SaTaskTimeLog::where('task_id', $task->id)
-                ->where('user_id', $userId) // Assuming you have the SA's ID
-                ->where('task_status', 1)  // Ensure accepted status
-                ->exists()) {
+            if (
+                SaTaskTimeLog::where('task_id', $task->id)
+                    ->where('user_id', $userId) // Assuming you have the SA's ID
+                    ->where('task_status', 1)  // Ensure accepted status
+                    ->exists()
+            ) {
                 $saIndex++;
             } else {
                 $this->acceptTaskAndLog($task, $sa);
@@ -356,8 +372,8 @@ class OfficeAdminDashboardController extends Controller
     private function acceptTaskAndLog(Task $task, SaProfile $sa)
     {
         $userId = DB::table('users')
-                ->where('id_number', $sa->user_id)
-                ->value('id');
+            ->where('id_number', $sa->user_id)
+            ->value('id');
 
         // Assuming 'user_id' represents the SA in your user_tasks_timelog table
         $taskLog = new SaTaskTimeLog();
@@ -374,10 +390,11 @@ class OfficeAdminDashboardController extends Controller
     }
 
     // Edit Task
-    public function edit(string $id){
+    public function edit(string $id)
+    {
         $task = Task::find($id);
         $courses = Courses::all();
-        return view('office.office_edit_task',compact('task','courses'));
+        return view('office.office_edit_task', compact('task', 'courses'));
     }
 
     /**
@@ -426,7 +443,7 @@ class OfficeAdminDashboardController extends Controller
     {
         $courses = $this->program();
         $user = $this->getuserID();
-        return view('office.office_add_task',compact('user','courses'));
+        return view('office.office_add_task', compact('user', 'courses'));
     }
 
     /**

@@ -22,6 +22,7 @@ return new class extends Migration
             $table->date('birth_date');
             $table->string('birth_place');
             $table->string('course_program');
+            $table->string('status')->nullable(); // null, Under Probation, Revoked
             $table->timestamps();
         });
     }

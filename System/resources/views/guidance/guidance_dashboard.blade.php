@@ -18,7 +18,8 @@
                             <div class="card ">
                                 <div class="bg-success py-2 px-3 text-dark bg-opacity-50 bg-gradient shadow">
                                     <h6 class="h4">Active SA</h6>
-                                    <h2 class="text-right"><i class="fa fa-cart-plus f-left"></i><span>486</span></h2>
+                                    <h2 class="text-right"><i
+                                            class="fa fa-cart-plus f-left"></i><span></span>{{ $activeSA }}</h2>
                                 </div>
                             </div>
                         </div>
@@ -26,7 +27,8 @@
                             <div class="card">
                                 <div class="bg-warning py-2 px-3 text-dark bg-opacity-50 bg-gradient shadow">
                                     <h6 class="h4">Inactive SA</h6>
-                                    <h2 class="text-right"><i class="fa fa-cart-plus f-left"></i><span>486</span></h2>
+                                    <h2 class="text-right"><i
+                                            class="fa fa-cart-plus f-left"></i><span>{{ $inactiveSA }}</span></h2>
                                 </div>
                             </div>
                         </div>
@@ -34,7 +36,8 @@
                             <div class="card">
                                 <div class="bg-info py-2 px-3 text-dark bg-opacity-50 bg-gradient shadow">
                                     <h6 class="h4">Total SA</h6>
-                                    <h2 class="text-right"><i class="fa fa-cart-plus f-left"></i><span>486</span></h2>
+                                    <h2 class="text-right"><i
+                                            class="fa fa-cart-plus f-left"></i><span>{{ $totalSA }}</span></h2>
                                 </div>
                             </div>
                         </div>
@@ -59,15 +62,20 @@
             </div>
         </div>
     </div>
-
-
-    @include('nav.offcanvas_menu_guidance')
 @endsection
 
 @section('scripts')
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
     <script>
+        const activeScholar = @json($activeScholar);
+        const probationScholar = @json($probationScholar);
+        const revokedScholar = @json($revokedScholar);
+
+        const zeroProbation = @json($zeroProbation);
+        const zeroRevoked = @json($zeroRevoked);
+        const majorProbation = @json($majorProbation);
+        const majorRevoked = @json($majorRevoked);
         const ctx = document.getElementById('myChart');
         const studAct = document.getElementById('studTaskActivity');
         new Chart(ctx, {
@@ -76,7 +84,7 @@
                 labels: ['Active Scholar', 'Under Probation', 'Revoked Sholarship'],
                 datasets: [{
                     label: ' # Student Assistant',
-                    data: [10, 5, 3],
+                    data: [activeScholar, probationScholar, revokedScholar],
                     backgroundColor: ["#1A2E40", "#FFC300", "#E74C3C"],
                     borderWidth: 3
                 }]
@@ -90,7 +98,7 @@
                 plugins: {
                     title: {
                         display: true,
-                        text: 'Sa Scholarship Status'
+                        text: 'Scholarship Status'
                     },
                 }
             }
@@ -99,19 +107,22 @@
         new Chart(studAct, {
             type: 'bar',
             data: {
-                labels: ['Revoked', 'Probation'], // Categories for the X-axis
-                datasets: [
-                    {
-                        label: '0.0',
-                        data: [10, 5], // Replace with actual counts for 0.0 grade revoked and probation
-                        backgroundColor: 'rgba(0, 22, 62, .2)', // Color for 0.0 Grade
+                labels: ['0.0', 'Major Offense'], // Categories for the X-axis
+                datasets: [{
+                        label: 'On Probation',
+                        data: [zeroProbation,
+                            majorProbation
+                        ], // Replace with actual counts for 0.0 grade revoked and probation
+                        backgroundColor: 'rgba(0, 22, 62, .2)', // Color for probation Grade
                         borderColor: 'rgba(0, 22, 62, 1)',
                         borderWidth: 1
                     },
                     {
-                        label: 'Major Offense',
-                        data: [8, 3], // Replace with actual counts for major offense revoked and probation
-                        backgroundColor: 'rgba(231, 175, 65, .2)', // Color for Major Offense
+                        label: 'Revoked Scholarship',
+                        data: [zeroRevoked,
+                            majorRevoked
+                        ], // Replace with actual counts for major offense revoked and probation
+                        backgroundColor: 'rgba(231, 175, 65, .2)', // Color for revoked scholarship
                         borderColor: 'rgba(231, 175, 65, 1)',
                         borderWidth: 1
                     }
@@ -123,7 +134,7 @@
                         beginAtZero: true,
                         title: {
                             display: true,
-                            text: 'Number of SAs'
+                            text: 'Student Assistant'
                         }
                     },
                     x: {
@@ -136,7 +147,7 @@
                 plugins: {
                     title: {
                         display: true,
-                        text: 'SA Offense Status'
+                        text: 'Offense Status'
                     },
                     legend: {
                         position: 'top'

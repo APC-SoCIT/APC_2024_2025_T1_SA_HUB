@@ -30,13 +30,15 @@
                         <p class="d-lg-flex h4" style="font-weight: bold;">&nbsp; Contact Details :&nbsp;</p>
                         <p class="mb-0">{{ Auth::user()->email }} | +{{ $userProfiles->contact_number }}</p>
                     </div>
-                {{-- @endforeach --}}
+                    {{-- @endforeach --}}
                 </div>
             </div>
 
             <div class="px-3">
                 <section>
-                    <h1 class="text-center mt-4">Class Schedule</h1>
+                    <div class="background-accent1 py-2 border-accent2 rounded mb-3 d-xl-flex justify-content-xl-center align-items-xl-center mt-4">
+                        <h2 class="text-accent2 mb-0">Class Schedule</h2>
+                    </div>
                     <h6 style="text-align: center;margin-bottom: 0px;">SY {{ $term }} Term 1</h6>
                     <div class="table-responsive" style="padding: 1em;">
                         <table class="table table-hover table-border rounded">
@@ -51,18 +53,32 @@
                             </thead>
                             <tbody class="background-accent3">
                                 @forelse($schedule as $class)
-                                    <tr class="{{ $loop->odd ? 'bg-light' : 'bg-white' }} text-center">
+                                    @php
+                                        $timeDay = json_decode($class->time_constraints, true);
+                                    @endphp
+
+                                    <tr class="text-center">
                                         <td class="table-border2 rounded" data-label="Subject Code"
                                             aria-label="Subject Code">
                                             {{ $class->subject_code }}</td>
                                         <td class="table-border2 rounded" data-label="Section" aria-label="Section">
                                             {{ $class->section }}</td>
                                         <td class="table-border2 rounded" data-label="Day" aria-label="Day">
-                                            {{ $class->day }}</td>
+                                            @foreach($timeDay['days'] as $day)
+                                                {{$day}}
+                                                @if (!$loop->last)
+                                                    ,
+                                                @endif
+                                            @endforeach
+                                            {{-- {{ $timeDay['days'][0] }}</td> --}}
                                         <td class="table-border2 rounded" data-label="Time" aria-label="Time">
-                                            {{ $class->time_constraints }}</td>
+                                            @php
+                                                $startTime = \Carbon\Carbon::parse($timeDay['time_start']);
+                                                $endTime = \Carbon\Carbon::parse($timeDay['time_end']);
+                                            @endphp
+                                            {{ $startTime->format('h:ma') }} - {{ $endTime->format('h:ma') }}</td>
                                         <td class="table-border2 rounded" data-label="Instructor" aria-label="Instructor">
-                                            {{ $class->instructor->name ?? 'TBA' }}
+                                            {{ $class->instructors }}
                                         </td>
                                     </tr>
                                 @empty
@@ -76,9 +92,12 @@
                     </div>
                 </section>
             </div>
+            <hr>
             <div class="px-3">
                 <section>
-                    <h1 style="text-align: center;">Task History</h1>
+                    <div class="background-accent1 py-2 border-accent2 rounded mb-1 d-xl-flex justify-content-xl-center align-items-xl-center mt-4">
+                        <h2 class="text-accent2 mb-0">Task History</h2>
+                    </div>
                     <h6 style="text-align: center;margin-bottom: 0px;">
                         @foreach ($rendered as $render)
                             @if (empty($render->total_hours) && $render->total_hours === null)
@@ -107,11 +126,19 @@
                             </thead>
                             <tbody class="background-accent3">
                                 @forelse($taskHistories as $taskHistory)
+                                    @php
+                                        $startTime = \Carbon\Carbon::parse($taskHistory->start_time);
+                                        $endTime = \Carbon\Carbon::parse($taskHistory->end_time);
+                                    @endphp
                                     <tr class="text-center">
                                         <td class="table-border2 rounded" data-label="Task No." scope="row">
                                             {{ $taskHistory->id }}</td>
                                         <td class="table-border2 rounded" data-label="Date &amp; Time">
-                                            {{ $taskHistory->start_date }}</td>
+                                            {{ $taskHistory->start_date }}
+                                            <p class="m-0" style="font-size: 9px">
+                                                {{ $startTime->format('h:ma') }} - {{ $endTime->format('h:ma') }}
+                                            </p>
+                                        </td>
                                         <td class="table-border2 rounded" data-label="Time In">
                                             {{ $taskHistory->time_in ?? 'No Time-In Yet' }}
                                         </td>

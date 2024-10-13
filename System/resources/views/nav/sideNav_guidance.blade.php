@@ -1,4 +1,4 @@
-<div class="col-auto col-md-2 px-sm-3 px-0 border-end sticky-top sticky-offset border vh-100 overflow-auto">
+<div class="col-auto col-md-2 px-sm-3 px-0  sticky-top sticky-offset border-nav-right shadow vh-100 overflow-auto">
     <div class="flex-column align-items-center align-items-sm-start ps-3 pt-2 text-white">
         <div class="text-end">
             <div class="row flex-column align-items-center border-bottom pb-1">
@@ -23,14 +23,14 @@
             </li>
 
             <li class="nav-item">
-                <a href="{{ route('guidance.dashboard')}}" class="nav-link align-middle px-0 text-accent2">
-                    <i class="fs-4 bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Probation</span>
+                <a href="{{ route('guidance.probation')}}" class="nav-link align-middle px-0 text-accent2">
+                    <i class="fs-4 bi-hourglass-split"></i> <span class="ms-1 d-none d-sm-inline">Probation</span>
                 </a>
             </li>
 
             <li class="nav-item">
-                <a href="{{ route('guidance.dashboard')}}" class="nav-link align-middle px-0 text-accent2">
-                    <i class="fs-4 bi-speedometer2"></i> <span class="ms-1 d-none d-sm-inline">Scholarship</span>
+                <a href="{{ route('guidance.scholarship')}}" class="nav-link align-middle px-0 text-accent2">
+                    <i class="fs-4 bi-exclamation-circle-fill"></i> <span class="ms-1 d-none d-sm-inline">Scholarship</span>
                 </a>
             </li>
     </div>

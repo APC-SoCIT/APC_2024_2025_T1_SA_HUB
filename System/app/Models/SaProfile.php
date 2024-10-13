@@ -12,6 +12,7 @@ class SaProfile extends Model
     protected $table = 'sa_profiles';
 
     protected $fillable = [
+        'user_id',
         'first_name',
         'last_name',
         'middle_initial',
@@ -20,5 +21,14 @@ class SaProfile extends Model
         'birth_date',
         'birth_place',
         'course_program',
+        'status'
     ];
+
+    public function studentUser(){
+        return $this->belongsTo(User::class, 'user_id', 'id_number' );
+    }
+
+    public function offenses(){
+        return $this->hasMany(Offense::class, 'user_id','user_id' );
+    }
 }

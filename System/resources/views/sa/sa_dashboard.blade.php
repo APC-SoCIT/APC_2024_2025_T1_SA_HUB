@@ -9,9 +9,13 @@
         @php
             use App\Models\SaTaskTimeLog;
         @endphp
-        <div style="padding: 3em;">
+        <div>
             <section>
-                <h1 class="text-center">Voluntary Tasks</h1>
+                <h1 class="text-center"></h1>
+                <div
+                    class="background-accent1 py-2 border-accent2 rounded mb-1 d-xl-flex justify-content-xl-center align-items-xl-center mt-4">
+                    <h2 class="text-accent2 mb-0">Voluntary Tasks</h2>
+                </div>
                 @if (session('accept_task_success'))
                     <div class="alert alert-success alert-dismissible fade show" role="alert">
                         {{ session('accept_task_success') }}
@@ -76,25 +80,35 @@
                                             <p class="m-0" style="font-size: 12px;">{{ $task->start_time }} -
                                                 {{ $task->end_time }}</p>
                                         </td>
-                                        <td class="table-border2 rounded text-center">{{ $task->preffred_program }}</td>
+                                        <td class="table-border2 rounded text-center">{{ $task->preffred_program }}
+                                        </td>
                                         <td class="table-border2 rounded text-center">{{ $task->assigned_office }}</td>
                                         <td class="table-border2 rounded text-center">{{ $task->note }}</td>
-                                        @if ($saCount == $task->number_of_sa)
+                                        @if ($saProfile && $saProfile->offenses()->where('type', 'major')->where('status', 'probation')->exists())
+                                            {{-- The SA is on probation for a major offense --}}
+                                            <td class="table-border2 rounded text-center">
+                                                <button type="button" class="btn btn-secondary" disabled>
+                                                    Unavailable
+                                                    (Under Probation)</button>
+                                            </td>
+                                        @elseif ($saCount == $task->number_of_sa)
                                             <td class="table-border2 rounded text-center">
                                                 <input type="hidden" name="task_id" value="{{ $task->id }}">
-                                                <button type="submit" class="btn btn-secondary">Full</button>
+                                                <button type="submit" class="btn btn-secondary w-100">Full</button>
                                             </td>
                                         @elseif ($isAccepted)
                                             <td class="table-border2 rounded text-center">
                                                 <input type="hidden" name="task_id" value="{{ $task->id }}">
-                                                <button type="submit" class="btn btn-primary" disabled>Accepted</button>
+                                                <button type="submit" class="btn background-accent1 text-accent2 w-100"
+                                                    disabled>Accepted</button>
                                             </td>
                                         @else
                                             <form action="{{ route('sa.accept', $task->id) }}" method="post">
                                                 @csrf
                                                 <td class="table-border2 rounded">
                                                     <input type="hidden" name="task_id" value="{{ $task->id }}">
-                                                    <button type="submit" class="btn background-accent2 text-accent1 w-100">Accept</button>
+                                                    <button type="submit"
+                                                        class="btn background-accent2 text-accent1 w-100">Accept</button>
                                                 </td>
                                             </form>
                                         @endif
@@ -110,16 +124,20 @@
             </section>
         </div>
 
-        <div style="padding: 3em;border-top-style: groove;">
+        <div style="border-top-style: groove;">
             <section>
-                <h1 class="text-center">Tasks</h1>
+                <h1 class="text-center"></h1>
+                <div
+                    class="background-accent1 py-2 border-accent2 rounded mb-1 d-xl-flex justify-content-xl-center align-items-xl-center mt-4">
+                    <h2 class="text-accent2 mb-0">Student Assistant Tasks</h2>
+                </div>
                 <div class="table-responsive" style="padding: 1em;">
                     <table class="table table-hover table-border rounded">
                         <thead class="background-accent1">
                             <tr>
-                                <th class="table-border2 rounded">TASK NO.</th>
-                                <th class="table-border2 rounded">DATE &amp; TIME</th>
-                                <th class="table-border2 rounded">PROGRAM</th>
+                                <th class="table-border2 rounded">Task No.</th>
+                                <th class="table-border2 rounded">Date &amp; Time</th>
+                                <th class="table-border2 rounded">Program</th>
                                 <th class="table-border2 rounded">Task</th>
                                 <th class="table-border2 rounded">Office</th>
                                 <th class="table-border2 rounded">Note</th>
@@ -141,22 +159,24 @@
                                             <p class="mb-0" style="font-size: 12px;">{{ $assignedtask->start_time }} -
                                                 {{ $assignedtask->end_time }}</p>
                                         </td>
-                                        <td class="table-border2 rounded text-center">{{ $assignedtask->preffred_program }}</td>
+                                        <td class="table-border2 rounded text-center">
+                                            {{ $assignedtask->preffred_program }}</td>
                                         <td class="table-border2 rounded text-center">{{ $assignedtask->to_be_done }}</td>
                                         <td class="table-border2 rounded text-center">
                                             <p style="margin: 0px;">{{ $assignedtask->assigned_office }}</p>
                                             <p class="mb-0" style="font-size: 12px;">
-                                                {{ DB::table('users')->where('users.id', '=', $assignedtask->office_id)->select('users.email')->first()->email }}
+                                                {{-- {{ DB::table('users')->where('users.id', '=', $assignedtask->office_id)->select('users.email')->first()->email }} --}}
                                             </p>
                                         </td>
                                         <td class="table-border2 rounded text-center">{{ $assignedtask->note }}</td>
                                         <td class="table-border2 rounded text-center">
                                             <form action="{{ route('sa.timein') }}" method="POST">
                                                 @csrf
-                                                <input type="hidden" name="task_id" value="{{ $assignedtask->task_id }}">
+                                                <input type="hidden" name="task_id"
+                                                    value="{{ $assignedtask->task_id }}">
                                                 <input type="hidden" name="user_id" value="{{ $user->id }}">
                                                 @if (!SaTaskTimeLog::where('task_id', $assignedtask->task_id)->where('user_id', $user->id)->whereDate('time_in', now()->toDateString())->exists())
-                                                    <button type="submit" class="btn btn-primary">Time-In</button>
+                                                    <button type="submit" class="btn btn-primary text-nowrap">Time-In</button>
                                                 @else
                                                     <button type="submit" class="btn btn-secondary disabled"
                                                         disabled>Time-In</button>
@@ -170,7 +190,7 @@
                                                     value="{{ $assignedtask->task_id }}">
                                                 <input type="hidden" name="user_id" value="{{ $user->id }}">
                                                 @if (!SaTaskTimeLog::where('task_id', $assignedtask->task_id)->where('user_id', $user->id)->whereDate('time_out', now()->toDateString())->exists())
-                                                    <button type="submit" class="btn btn-primary">Time-Out</button>
+                                                    <button type="submit" class="btn btn-primary text-nowrap">Time-Out</button>
                                                 @else
                                                     <button type="submit" class="btn btn-secondary disabled"
                                                         disabled>Time-Out</button>

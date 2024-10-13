@@ -14,9 +14,9 @@ return new class extends Migration
         Schema::create('subject_offering_details', function (Blueprint $table) {
             $table->id();
             $table->string('subject_offering_id', 255);
-            $table->json('time_constraints')->nullable(); 
-            $table->json('instructors')->nullable(); 
-            $table->json('prerequisites')->nullable(); 
+            $table->json('time_constraints')->nullable();
+            $table->string('instructors')->nullable();
+            $table->string('prerequisites')->nullable();
             $table->timestamps();
         });
     }

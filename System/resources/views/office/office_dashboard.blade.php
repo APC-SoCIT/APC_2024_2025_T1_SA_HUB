@@ -6,7 +6,7 @@
     <!-- Your content here -->
     @include('include.nav_bar')
     <div class="main-background">
-        <section class="pt-5">
+        <section>
             @if (session('success'))
                 <div class="alert alert-success alert-dismissible show mx-5 m-auto" role="alert">
                     {{ session('success') }}
@@ -28,19 +28,28 @@
             @error('end_time')
                 <div class="invalid-feedback">{{ $message }}</div>
             @enderror
-                <h1 class="text-accent2 text-center">Student Assistant Tasks</h1>
-                {{-- <hr class="border-accent2 rounded w-100 m-auto mb-3" style="opacity: .75;"> --}}
-            <div class="table-responsive mx-5 mb-0" style="padding: 1em;">
+            <h1 class="text-accent2 text-center"></h1>
+            <div class="background-accent1 py-2 border-accent2 rounded mb-1 d-xl-flex justify-content-xl-center align-items-xl-center mt-4">
+                <h2 class="text-accent2 mb-0">Student Assistant Tasks</h2>
+            </div>
+            {{-- <hr class="border-accent2 rounded w-100 m-auto mb-3" style="opacity: .75;"> --}}
+            <div class="table-responsive mb-0 py-2" >
                 <table class="table table-hover table-border rounded">
                     <thead class="background-accent1">
                         <tr>
-                            <th class="table-border2 rounded">Task No.</th>
+                            <th class="table-border2 rounded text-nowrap">Task No.</th>
                             <th class="table-border2 rounded">Date &amp; Time</th>
                             <th class="table-border2 rounded">Program</th>
                             <th class="table-border2 rounded">Task</th>
                             <th class="table-border2 rounded">Hours</th>
                             <th class="table-border2 rounded">Note</th>
-                            <th class="table-border2 rounded">Task Accepts</th>
+
+                            <th class="table-border2 rounded text-center">
+                                Status<br>
+                                <p class="text-nowrap m-0" style="font-size: 9px">
+                                    (Click to Review)
+                                </p>
+                            </th>
                             <th class="table-border2 rounded">Actions</th>
                         </tr>
                     </thead>
@@ -67,26 +76,44 @@
                                     <td class="table-border2 rounded text-center">{{ $task->totalHours }}</td>
                                     <td class="table-border2 rounded text-center">{{ $task->note }}</td>
                                     <td class="table-border2 rounded text-center">
-                                        <a href="{{ route('office.saList', $task->id) }}"
-                                            class="btn w-100
+                                        @if ($task->status == 'completed')
+                                            <div
+                                                class=" badge py-2
+                                        @if ($task->status == 'completed') bg-success text-light
+                                        @elseif ($task->status = 'ongoing') bg-danger text-light @endif
+                                        ">
+                                                {{ $task->status }}
+                                            </div>
+                                        @elseif($task->status = 'ongoing')
+                                            <a href="{{ route('office.saList', $task->id) }}"
+                                                class="btn w-100 text-nowarp
                                         @if ($task->saCount < $task->number_of_sa) btn-success
                                         @elseif ($task->saCount = $task->number_of_sa)
                                             btn-danger @endif
                                         ">
-                                            @if ($task->saCount < $task->number_of_sa)
-                                                {{ $task->saCount }} /{{ $task->number_of_sa }}
-                                            @elseif ($task->saCount = $task->number_of_sa)
-                                                Full
-                                            @endif
+                                                @if ($task->saCount < $task->number_of_sa)
+                                                    {{ $task->saCount }}/{{ $task->number_of_sa }}
+                                                @elseif ($task->saCount = $task->number_of_sa)
+                                                    Full
+                                                @endif
 
-                                        </a>
+                                            </a>
+                                        @endif
                                     </td>
-
+                                    {{-- <td class="table-border2 rounded text-center text-capitalize">
+                                        <div
+                                            class=" badge py-2
+                                        @if ($task->status == 'completed') bg-success text-light
+                                        @elseif ($task->status = 'ongoing') bg-danger text-light @endif
+                                        ">
+                                            {{ $task->status }}
+                                        </div>
+                                    </td> --}}
                                     <td class="table-border2 rounded">
-                                        <div class="input-group row align-items-center m-auto">
-                                            <a class="btn btn-primary col"
+                                        <div class=" row align-items-center m-auto">
+                                            <a class="btn btn-primary col mb-2 mx-1"
                                                 href="{{ route('office.edit', $task->id) }}">Edit</a>
-                                            <button class="btn btn-danger col" data-bs-toggle="modal"
+                                            <button class="btn btn-danger col mb-2 mx-1" data-bs-toggle="modal"
                                                 data-bs-target="#deleteTaskModal-{{ $task->id }}">Delete</button>
 
                                         </div>

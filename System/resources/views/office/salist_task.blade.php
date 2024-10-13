@@ -14,11 +14,10 @@
                 </div>
             @endif
         </section>
-        <div style="padding: 3em;">
-
+        <div>
             <section>
-                <div class="background-accent1 py-2 border-accent2 rounded mb-1 d-xl-flex justify-content-xl-center align-items-xl-center"
-                    >
+                <div
+                    class="background-accent1 py-2 border-accent2 rounded mb-1 d-xl-flex justify-content-xl-center align-items-xl-center">
                     <h3 class="text-accent2">Task {{ $taskId }} Review</h3>
                 </div>
                 <div class="table-responsive">
@@ -27,39 +26,48 @@
                             <tr>
                                 <th class="table-border2 rounded">Student No.</th>
                                 <th class="table-border2 rounded">SA Name</th>
-                                <th class="table-border2 rounded">Course</th>
-                                <th class="table-border2 rounded">Latest Time In</th>
-                                <th class="table-border2 rounded">Latest Time Out</th>
-                                <th class="table-border2 rounded">Hours Rendered</th>
+                                <th class="table-border2 rounded">Program</th>
+                                <th class="table-border2 rounded">Time In</th>
+                                <th class="table-border2 rounded">Time Out</th>
+                                <th class="table-border2 rounded">Hours</th>
                                 <th class="table-border2 rounded">Feedback</th>
                             </tr>
                         </thead>
                         <tbody class="background-accent3 align-items-center">
-
                             @if ($saLists->isEmpty())
                                 <tr>
-                                    <td class="table-border rounded text-center" colspan="8"><strong> No Student Assistant Available
+                                    <td class="table-border rounded text-center" colspan="8"><strong> No Student
+                                            Assistant Available
                                         </strong></td>
                                 </tr>
                             @else
                                 @foreach ($saLists as $saList)
+                                    {{-- @dd($saList) --}}
                                     <tr>
+                                        @php
+                                            $time_in = \Carbon\Carbon::parse($saList->time_in);
+                                            $time_out = \Carbon\Carbon::parse($saList->time_out);
+                                        @endphp
                                         <td class="table-border2 rounded text-center">{{ $saList->user_id }}</td>
-                                        <td class="table-border2 rounded text-center">{{ $saList->first_name }}
-                                            {{ $saList->last_name }}</td>
-                                        <td class="table-border2 rounded text-center">{{ $saList->course_program }}</td>
                                         <td class="table-border2 rounded text-center">
-                                            @if ($saList->timein == null)
+                                            {{ $saList->user->saProfile->first_name }}
+                                            {{ $saList->user->saProfile->last_name }}
+                                        </td>
+                                        <td class="table-border2 rounded text-center">
+                                            {{ $saList->user->saProfile->course_program }}
+                                        </td>
+                                        <td class="table-border2 rounded text-center">
+                                            @if ($time_in == null)
                                                 No Time-In Yet
                                             @else
-                                                {{ $saList->timein }}
+                                                {{ $time_in->format('h:i a') }}
                                             @endif
                                         </td>
                                         <td class="table-border2 rounded text-center">
-                                            @if ($saList->timeout == null)
+                                            @if ($time_out == null)
                                                 No Time-Out Yet
                                             @else
-                                                {{ $saList->timeout }}
+                                                {{ $time_out->format('h:i a') }}
                                             @endif
                                         </td>
 
@@ -71,13 +79,12 @@
                                             @endif
                                         </td>
                                         <td class="table-border2 rounded text-center">
-                                            <button class="btn {{ $saList->timeout ? 'btn-info' : 'btn-warning ' }}"
-                                                type="button"
-                                                style="font-size: 12px;color: rgb(0,0,0);font-weight: bold;border-style: none;"
-                                                data-bs-toggle="modal"
+                                            <button
+                                                class="btn {{ $saList->timeout ? 'background-accent2 text-accent1' : 'background-accent1 text-accent2 ' }}"
+                                                type="button" data-bs-toggle="modal"
                                                 data-bs-target="#feedbackModal-{{ $saList->timelogId }}"
-                                                {{ $saList->timeout ? ' ' : 'disabled' }}>
-                                                {{ $saList->timeout ? 'Add/Edit Feedback' : 'Finish Task First' }}
+                                                {{ $saList->time_out ? ' ' : 'disabled' }}>
+                                                {{ $saList->time_out ? 'Add/Edit Feedback' : 'Finish Task First' }}
                                             </button>
                                             @include('modals.feedback')
                                         </td>

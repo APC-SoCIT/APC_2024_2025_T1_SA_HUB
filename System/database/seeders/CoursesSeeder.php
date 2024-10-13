@@ -18,25 +18,25 @@ class CoursesSeeder extends Seeder
             [
                 'campus_id' => 'Makati',
                 'code' => 'IT123',
-                'name' => 'Information Technology',
+                'name' => 'BS Information Technology',
                 'is_offered' => 1,
             ],
             [
                 'campus_id' => 'Makati',
-                'code' => 'CS123',
-                'name' => 'Computer Science',
+                'code' => 'EE123',
+                'name' => 'BS Electronics Engineering',
                 'is_offered' => 1,
             ],
             [
                 'campus_id' => 'Manila',
                 'code' => 'IT123',
-                'name' => 'Information Technology',
+                'name' => 'BS Information Technology',
                 'is_offered' => 0,
             ],
             [
                 'campus_id' => 'Laguna',
                 'code' => 'CS123',
-                'name' => 'Computer Science',
+                'name' => 'BS Computer Science',
                 'is_offered' => 1,
             ],
         ]);

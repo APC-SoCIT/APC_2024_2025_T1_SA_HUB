@@ -16,14 +16,21 @@ class SaTaskTimeLog extends Model
         'time_in',
         'time_out',
         'total_hours',
-        'is_Approved_In',
-        'is_Approved_out',
+        'is_Approved_In', // make this null
+        'is_Approved_out', // make this null
         'feedback',
     ];
 
-    public function task()
-    {
-        return $this->belongsTo(Task::class);
+    // public function task(){
+    //     return $this->belongsTo(Task::class);
+    // }
+
+    public function user(){
+        return $this->belongsTo(User::class,'user_id');
+    }
+
+    public function task(){
+        return $this->belongsTo(Task::class, 'task_id');
     }
 
 }

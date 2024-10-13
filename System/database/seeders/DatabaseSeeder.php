@@ -24,6 +24,14 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             SaProfileSeeder::class,
             CoursesSeeder::class,
+            SubjectOfferingSeeder::class,
+            SaScheduleSeeder::class,
+            StudentGradeSeeder::class,
+            OffenseItemSeeder::class,
+            OffenseSeeder::class,
+            ScholarshipSeeder::class,
+            TaskSeeder::class,
+            UserTaskSeeder::class,
         ]);
     }
 }

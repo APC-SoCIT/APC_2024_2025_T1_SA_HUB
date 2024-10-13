@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('id_number')->unique();
+            $table->string('avatar_path')->nullable();
             $table->string('username')->unique();
             $table->string('faculty');
             // $table->string('account_type');
@@ -22,6 +23,7 @@ return new class extends Migration
             $table->string('password');
             $table->rememberToken();
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 
