@@ -51,7 +51,7 @@ class SaProfileSeeder extends Seeder
                 'birth_date' => '1999-02-21',
                 'birth_place' => 'Pasig City, Philippines',
                 'course_program' => 'BS Information Technology',
-                'status' => 'probation',
+                'status' => 'active',
             ],
             [
                 'id_number' => 117,

@@ -37,11 +37,6 @@ class OfficeAdminDashboardController extends Controller
         return $program;
     }
 
-    public function StartTime()
-    {
-
-    }
-
     //view inactive tasks
 
     public function dashboard()
@@ -161,27 +156,36 @@ class OfficeAdminDashboardController extends Controller
         return $query;
     }
 
-    public function saReport($status = "completed")
+    public function saReport($status = "ongoing")
     {
         $user = $this->getuserID();
-        // $saLists = $this->getSaData($status);
-        if ($status === 'ongoing') {
-            $task_status = 1;
-        } elseif ($status === 'completed') {
-            $task_status = 2;
-        }
 
-        $saLists = SaTaskTimeLog::select(
+        // Query for ongoing tasks
+        $saListsOngoing = SaTaskTimeLog::select(
             'user_id',
             DB::raw('SUM(total_hours) as total_rendered_hours'),
-            DB::raw('COUNT(DISTINCT task_id) as total_tasks_accepted'),
+            DB::raw('COUNT(DISTINCT task_id) as total_tasks_accepted')
         )
-            ->where('task_status', '=', $task_status)
+            ->where('task_status', '=', 1)
             ->groupBy('user_id')
             ->get();
 
-        return view('reports.sa_report', ['status' => $status, 'saLists' => $saLists, 'user' => $user]);
+        // Query for completed tasks
+        $saListsCompleted = SaTaskTimeLog::select(
+            'user_id',
+            DB::raw('SUM(total_hours) as total_rendered_hours'),
+            DB::raw('COUNT(DISTINCT task_id) as total_tasks_accepted')
+        )
+            ->where('task_status', '=', 2)
+            ->groupBy('user_id')
+            ->get();
+
+        // Select the appropriate list based on status
+        $saLists = $status === 'ongoing' ? $saListsOngoing : $saListsCompleted;
+// dd($saLists);
+        return view('reports.sa_report', compact('status', 'saLists', 'user'));
     }
+
 
     public function officeReport()
     {
@@ -248,10 +252,9 @@ class OfficeAdminDashboardController extends Controller
             'note' => 'nullable|string',
         ]);
 
-        if ($validator->fails()) {
-            return redirect()->back()
-                ->withErrors($validator)
-                ->withInput(); // Preserve user input
+         if ($validator->fails()) {
+            // Flash the error messages to the session
+            return redirect()->back()->withErrors($validator)->withInput();
         }
 
         $validatedData = $validator->validated(); // Get validated data
@@ -261,8 +264,8 @@ class OfficeAdminDashboardController extends Controller
 
 
         if ($task['assignment_type'] == 1) {
-            $this->handleAutoAssignment($task, $validatedData);
             $task->save();
+            $this->handleAutoAssignment($task, $validatedData);
         } else {
             $this->handleVoluntary($task);
         }
@@ -280,9 +283,11 @@ class OfficeAdminDashboardController extends Controller
                     ->where('status', 'probation');
             })
             ->get();
+
         // Find SAs with available time slots
         $availableSAs = $this->findSAsWithAvailability($eligibleSAs, $task);
         // Assign the task
+
         $this->assignTaskToSAs($task, $availableSAs);
     }
 
@@ -338,6 +343,7 @@ class OfficeAdminDashboardController extends Controller
 
     private function assignTaskToSAs(Task $task, $availableSAs)
     {
+
         $saIndex = 0;
         $numberOfSAsNeeded = $task->number_of_sa; // Or retrieve dynamically if your task can handle a range
 
@@ -359,7 +365,6 @@ class OfficeAdminDashboardController extends Controller
             } else {
                 $this->acceptTaskAndLog($task, $sa);
                 $saIndex++;
-
             }
 
             if ($saIndex >= $numberOfSAsNeeded) {
@@ -371,6 +376,7 @@ class OfficeAdminDashboardController extends Controller
 
     private function acceptTaskAndLog(Task $task, SaProfile $sa)
     {
+
         $userId = DB::table('users')
             ->where('id_number', $sa->user_id)
             ->value('id');
@@ -380,6 +386,7 @@ class OfficeAdminDashboardController extends Controller
         $taskLog->task_id = $task->id;
         $taskLog->user_id = $userId;
         $taskLog->task_status = 1;
+
         $taskLog->save();
     }
 

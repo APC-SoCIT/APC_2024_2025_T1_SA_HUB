@@ -11,6 +11,7 @@ use App\Models\StudentGrade;
 use App\Models\Task;
 use Illuminate\Http\Request;
 use App\Models\User;
+use Carbon\Carbon;
 
 class GuidanceController extends Controller
 {
@@ -56,10 +57,11 @@ class GuidanceController extends Controller
     public function probation()
     {
 
-        $probationList = Offense::whereIn('status', ['pending', 'probation'])->with('SaProfile')->get()->groupBy('user_id');
+        $probationList = Offense::where('type', 'grade')->where('status','probation')->get();
         // dd($probationList);
-        $saLists = SaProfile::where('status', '=', 'probation')->get();
-        $Sa = SaProfile::whereIn('status', ['probation', 'revoked'])->with('offenses')->get();
+        // $saLists = SaProfile::where('status', '=', 'probation')->get();
+        // $Sa = SaProfile::whereIn('status', ['probation', 'revoked'])->with('offenses')->get();
+        // $probationList = StudentGrade::where('final_grade', 0.0)->get();
 
         return view('guidance.guidance_probation', compact('probationList'));
 
@@ -68,8 +70,12 @@ class GuidanceController extends Controller
     public function scholarship()
     {
 
-        $SaLists = SaProfile::whereIn('status', ['pending', 'probation', 'revoked'])->with('offenses')->get();
-
+        // $SaLists = SaProfile::whereIn('status', ['pending', 'probation', 'revoked'])->with('offenses')->get();
+        // $SaLists = StudentGrade::where('final_grade', '0.0')->get();
+        $SaLists = Offense::where('type', 'grade')
+            ->where('date_start', '<=', Carbon::now()->subYear())
+            ->get();
+        // dd($SaLists);
         return view('guidance.guidance_revoke', compact('SaLists'));
 
     }
@@ -96,10 +102,39 @@ class GuidanceController extends Controller
 
     public function setToProbation(Request $request, $saProfileID)
     {
-        $saProfile = SaProfile::where('user_id', '=', $saProfileID)->update(['status' => 'probation']);
-        $offense = Offense::where('user_id', $saProfileID)->update(['status' => 'probation']);
+        // Fetch the SA profile using the user ID
+        $saProfile = SaProfile::where('user_id', '=', $saProfileID)->first();
 
-        return redirect()->back()->with('success', 'Status updated to probation');
+        // Check if the SA profile exists
+        if ($saProfile) {
+            // Determine the new status (toggle between 'active' and 'probation')
+            $newStatus = $saProfile->status === 'probation' ? 'active' : 'probation';
+
+            // Update the SA profile's status
+            $saProfile->update(['status' => $newStatus]);
+
+            // Toggle the offense status
+            if ($newStatus === 'probation') {
+                // If the new status is probation, add the SA to the Offense table
+                Offense::updateOrCreate(
+                    [
+                        'user_id' => $saProfileID, // Condition to find existing record
+                        'type' => 'grade',
+                        'description' => '0.0',
+                        'status' => 'probation'
+                    ] // Data to update or insert
+                );
+            } else {
+                // If the new status is active, remove the SA from the Offense table
+                Offense::where('user_id', $saProfileID)->delete();
+            }
+
+            // Return a success message indicating the new status
+            return redirect()->back()->with('success', 'Status updated to ' . $newStatus);
+        } else {
+            // Return an error if no SA profile is found
+            return redirect()->back()->with('error', 'SA Profile not found.');
+        }
     }
 
     public function setToRevoke(Request $request, $saProfileID)
@@ -108,5 +143,20 @@ class GuidanceController extends Controller
         $user = User::where('id_number', '=', $saProfileID)->delete();
         $offense = Offense::where('user_id', $saProfileID)->update(['status' => 'revoked']);
         return redirect()->back()->with('success', 'Status updated to revoked');
+    }
+
+    public function restoreRevoke($id)
+    {
+        // Find the user, including the soft-deleted ones
+        $user = User::withTrashed()->find($id);
+
+        // Check if the user exists and is soft-deleted
+        if ($user && $user->trashed()) {
+            $user->restore(); // Restore the soft-deleted user
+            SaProfile::where('user_id', $user->id_number)->update(['status' => "active"]);
+            return redirect()->back()->with('success', 'User cancelled revoke successfully.');
+        }
+
+        return redirect()->back()->with('error', 'User not found or already active.');
     }
 }

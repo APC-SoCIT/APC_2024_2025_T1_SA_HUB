@@ -24,6 +24,7 @@ return new class extends Migration
             $table->string('course_program');
             $table->string('status')->nullable(); // null, Under Probation, Revoked
             $table->timestamps();
+            $table->softDeletes();
         });
     }
 

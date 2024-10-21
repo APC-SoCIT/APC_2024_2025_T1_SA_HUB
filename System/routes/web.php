@@ -90,6 +90,7 @@ Route::get('/guidance_office/probation', [GuidanceController::class, 'probation'
 Route::get('/guidance_office/scholarship', [GuidanceController::class, 'scholarship'])->name('guidance.scholarship');
 Route::post('/guidance_office/scholarship/{saProfile}/probe', [GuidanceController::class, 'setToProbation'])->name('guidance.scholarship.probe');
 Route::post('/guidance_office/scholarship/{saProfile}/revoke', [GuidanceController::class, 'setToRevoke'])->name('guidance.scholarship.revoke');
+Route::put('/guidance_office/{id}/restore', [GuidanceController::class, 'restoreRevoke'])->name('users.restore');
 
 });
 

@@ -26,9 +26,10 @@ class SaManagerDashboardController extends Controller
 
     public function probation()
     {
-        $probationList = SaProfile::whereIn('status', ['probation', 'revoked'])->with('offenses')->get();
+        $probationList = SaProfile::whereIn('status', ['probation'])->with('offenses')->get();
         $saLists = SaProfile::where('status', '=', 'probation')->get();
         $Sa = SaProfile::whereIn('status', ['probation', 'revoked'])->with('offenses')->get();
+        $probationList = Offense::where('type', 'major')->get();
         return view('sam.sam_probation', compact('probationList', 'saLists'));
     }
 
@@ -41,7 +42,12 @@ class SaManagerDashboardController extends Controller
 
     public function revoke()
     {
-        $SaLists = SaProfile::whereIn('status', ['probation', 'revoked'])->with('offenses')->get();
+        // $SaLists = SaProfile::whereIn('status', ['probation', 'revoked'])->with('offenses')->get();
+        // $SaLists = Offense::where('type', 'major')->get();
+        // dd($SaLists);
+        // $SaLists = $Sa;
+        $SaLists = Offense::distinct('user_id')->where('type', 'major')->get();
+        // dd($SaLists);
         return view('sam.sam_revoke', compact('SaLists'));
     }
 
@@ -50,16 +56,17 @@ class SaManagerDashboardController extends Controller
         // dd($request->all());
         $request->validate([
             'stud_id' => 'required|exists:sa_profiles,user_id', // assuming you have a `student_assistants` table
-            'type' => 'required',
+            // 'type' => 'major',
             'description' => 'required|string',
             'status' => 'required|string',
             'date_start' => 'nullable|date',
             'date_end' => 'nullable|date|after_or_equal:date_start', // Ensure the end date is after the start date
         ]);
+
         // Store the data in the database
         $offense = Offense::create([
             'user_id' => $request->input('stud_id'),
-            'type' => $request->input('type'),
+            'type' => 'major',
             'description' => $request->input('description'),
             'status' => $request->input('status'),
             'date_start' => $request->input('date_start'),
@@ -84,7 +91,7 @@ class SaManagerDashboardController extends Controller
         $saProfile = SaProfile::where('user_id','=', $saProfileID)->update(['status'=> 'probation']);
         $offense = Offense::where('user_id', $saProfileID)->update(['status'=> 'probation']);
 
-        return redirect()->back()->with('success', 'Status updated to probation');
+        return redirect()->back()->with('success', 'Status Updated to Probation');
     }
 
     public function setToRevoke(Request $request, $saProfileID)
@@ -147,7 +154,7 @@ class SaManagerDashboardController extends Controller
             ->groupBy('user_tasks_timelog.task_id', 'tasks.start_date', 'tasks.start_time', 'tasks.end_time', 'tasks.number_of_sa', 'tasks.preffred_program', 'tasks.to_be_done', 'tasks.assigned_office', 'tasks.note', 'task_status') // Group by all non-aggregated columns
             ->orderBy('user_tasks_timelog.task_id', 'asc')
             ->get();
-
+                // dd($assignedTasks);
         return view('sam.sam_dashboard_done', compact('assignedTasks', 'user'));
     }
 
@@ -183,7 +190,7 @@ class SaManagerDashboardController extends Controller
             ->where('tasks.id', '=', $taskId)
             ->where('user_tasks_timelog.task_status', $saList)
             ->get();
-
+                // dd($saLists);
         return view('sam.sam_salist_task_ongoing', compact('saLists', 'user', 'taskId'));
     }
 
@@ -245,7 +252,7 @@ class SaManagerDashboardController extends Controller
             ->where('tasks.id', '=', $taskId)
             ->where('user_tasks_timelog.task_status', '=', 2)
             ->get();
-
+                dd($saLists);
         return view('sam.sam_salist_task_done', compact('saLists', 'user', 'taskId'));
     }
 

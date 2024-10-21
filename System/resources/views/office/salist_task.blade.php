@@ -57,17 +57,17 @@
                                             {{ $saList->user->saProfile->course_program }}
                                         </td>
                                         <td class="table-border2 rounded text-center">
-                                            @if ($time_in == null)
+                                            @if ($saList->time_in == null)
                                                 No Time-In Yet
                                             @else
-                                                {{ $time_in->format('h:i a') }}
+                                                {{ $saList->time_in }}
                                             @endif
                                         </td>
                                         <td class="table-border2 rounded text-center">
-                                            @if ($time_out == null)
+                                            @if ($saList->time_out == null)
                                                 No Time-Out Yet
                                             @else
-                                                {{ $time_out->format('h:i a') }}
+                                                {{ $saList->time_out }}
                                             @endif
                                         </td>
 

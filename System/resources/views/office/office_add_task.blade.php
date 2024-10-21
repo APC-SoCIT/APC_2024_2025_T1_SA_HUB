@@ -6,7 +6,15 @@
     <!-- Your content here -->
     @include('include.nav_bar')
     <div class="main-background text-accent2">
-
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
         <div class="rounded border-accent1 m-auto mt-5 w-75 p-5">
             <div class="text-center mb-3">
 

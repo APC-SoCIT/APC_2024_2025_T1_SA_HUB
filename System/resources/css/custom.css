@@ -368,3 +368,35 @@ svg.landing-img {
 .border-nav-right{
     border-right: var(--accent2) solid 1px !important;
 }
+
+.custom-radio {
+    appearance: none;
+    -webkit-appearance: none; /* For Safari */
+    width: 20px;
+    height: 20px;
+    background-color: white;
+    border: 2px solid #333;
+    /* border-radius: 3px; */
+    cursor: pointer;
+    position: relative;
+}
+
+.custom-radio:checked {
+    background-color: var(--accent2); /* Color when selected */
+    border-color: var(--accent2);
+}
+
+/* Add the checkmark */
+.custom-radio:checked::after {
+    content: "\2713"; /* Checkmark symbol */
+    color: white;
+    font-size: 14px;
+    position: absolute;
+    top: -2px;
+    left: 4px;
+}
+
+/* Optional hover effect */
+.custom-radio:hover {
+    background-color: #e9ecef;
+}
