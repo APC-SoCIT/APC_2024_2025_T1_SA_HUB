@@ -2,6 +2,9 @@
 
 namespace Database\Seeders;
 
+use App\Models\SaProfile;
+use App\Models\SaTaskTimeLog;
+use App\Models\Task;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
@@ -15,7 +18,8 @@ class TaskSeeder extends Seeder
     public function run(): void
     {
 
-        DB::table('tasks')->insert([
+        // DB::table('tasks')->insert(
+        $tasks = [
             [
                 'isActive' => true,
                 'office_id' => 108,
@@ -114,7 +118,43 @@ class TaskSeeder extends Seeder
                 'note' => 'Ensure the forecast includes all pending transactions',
                 'assigned_office' => 'Business Administration',
             ],
-        ]);
+        ];
 
+        foreach ($tasks as $taskData) {
+            $task = Task::create($taskData); // Insert task data into tasks table
+
+            // Select a consistent set of SA profiles based on 'number_of_sa'
+            $saProfiles = SaProfile::inRandomOrder()->take($taskData['number_of_sa'])->get();
+
+            foreach ($saProfiles as $sa) {
+                // Define time_in and time_out for the task
+                $timeIn = Carbon::parse($taskData['start_time']);
+                $timeOut = Carbon::parse($taskData['end_time']);
+                $totalHours = $timeOut->diffInHours($timeIn);
+
+                // Insert into SaTaskTimeLog
+                SaTaskTimeLog::create([
+                    'task_status' => $taskData['status'] == 'ongoing' ? 1 : 2, // 1 = ongoing, 2 = completed
+                    'task_id' => $task->id,
+                    'user_id' => $sa->studentUser->id, // Random SA user
+                    'time_in' => $timeIn,
+                    'time_out' => $timeOut,
+                    'total_hours' => $totalHours,
+                    'feedback' => $taskData['status'] == 'ongoing' ? null : $this->randomFeedback(),
+                ]);
+            }
+        }
+    }
+    private function randomFeedback()
+    {
+        $feedbacks = [
+            'Good work!',
+            'Needs improvement.',
+            'Excellent task completion.',
+            'Satisfactory performance.',
+            'Task completed late but acceptable.',
+        ];
+
+        return $feedbacks[array_rand($feedbacks)];
     }
 }

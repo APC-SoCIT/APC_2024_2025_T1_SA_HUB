@@ -33,4 +33,6 @@ class SaTaskTimeLog extends Model
         return $this->belongsTo(Task::class, 'task_id');
     }
 
+
+
 }

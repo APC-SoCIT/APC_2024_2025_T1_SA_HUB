@@ -50,14 +50,9 @@
                         <tbody>
                             @if($tasks->count() == 0)
                                 <tr>
-                                        <td data-label="Attributes" scope="row" colpan="6"><strong> No Active Task Available </strong></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        <td></td>
-                                        
+                                        <td data-label="Attributes" scope="row" colspan="6"><strong> No Active Task Available </strong></td>
+
+
                                 </tr>
                             @else
                                 @foreach($tasks as $task)
@@ -76,15 +71,15 @@
                                         <div>
                                             <p style="margin: 0px;">{{$task->start_date}}</p>
                                             <p style="font-size: 12px">{{$startTimeampm}} - {{$endTimeampm}}</p>
-                                        </div>    
+                                        </div>
                                     </td>
                                     <td data-label="{{$task->preffred_program}}">{{$task->preffred_program}}</td>
                                     <td data-label="{{$task->to_be_done}}">{{$task->to_be_done}}</td>
                                     <td data-label="{{$totalHours}}">{{$totalHours}} Hrs</td>
                                     <td data-label="{{$task->note}}">{{$task->note}}</td>
                                     <td data-label="{{ $saCount }} /{{$task->number_of_sa}} ">
-                                        <a href="{{ route('office.saList', $task->id) }}" class="btn btn-info" > 
-                                            {{ $saCount }} /{{$task->number_of_sa}} 
+                                        <a href="{{ route('office.saList', $task->id) }}" class="btn btn-info" >
+                                            {{ $saCount }} /{{$task->number_of_sa}}
                                         </a>
                                     </td>
 
@@ -110,7 +105,7 @@
                     &nbsp;
                     <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" viewBox="0 0 16 16" class="bi bi-plus-lg" style="width: 25px;height: 25px;">
                     <path fill-rule="evenodd" d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2Z"></path>
-                    </svg> 
+                    </svg>
                     &nbsp;
                     Add Task</button></div>
         </div>

@@ -110,6 +110,18 @@ class OfficeAdminDashboardController extends Controller
         return view('office.salist_task', compact('saLists', 'user', 'taskId'));
     }
 
+    public function taskSaListComplete(Request $request, $id)
+    {
+        $user = $this->getuserID();
+        $saLists = SaTaskTimeLog::where('task_id', '=', $id)
+            ->where('task_status', '=', 2)
+            ->distinct()
+            ->latest()
+            ->get();
+        $taskId = $id;
+        return view('office.salist_task', compact('saLists', 'user', 'taskId'));
+    }
+
     public function addFeedback(Request $request)
     {
         $timeLogId = $request->input('timelogId');

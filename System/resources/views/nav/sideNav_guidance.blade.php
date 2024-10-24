@@ -2,11 +2,10 @@
     <div class="flex-column align-items-center align-items-sm-start ps-3 pt-2 text-white">
         <div class="text-end">
             <div class="row flex-column align-items-center border-bottom pb-1">
-                <img class="img-fluid col-5 p-0" src="https://placehold.co/50" alt="">
                 <div class="col-12">
                     <div class="row text-center">
                         <h4 class="w-100 text-accent2 mb-0">{{ Auth::user()->username }}</h4>
-                        <p class="fw-smaller text-accent2 mb-0" style="font-size: 11px;">{{ Auth::user()->email }}
+                        <p class="fw-smaller text-accent2 mb-2" style="font-size: 11px;">{{ Auth::user()->email }}
                         </p>
                     </div>
 

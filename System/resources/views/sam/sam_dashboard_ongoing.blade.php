@@ -60,8 +60,12 @@
                                         <td class="table-border2 rounded text-center">{{ $task->task_id }}</td>
                                         <td class="table-border2 rounded text-center">
                                             <p style="margin: 0px;">{{ $task->start_date }}</p>
-                                            <p class="mb-0" style="font-size: 12px;">{{ $task->start_time }} -
-                                                {{ $task->end_time }}</p>
+                                            <p class="mb-0" style="font-size: 12px;">
+                                                @php
+                                                    $startTime = \Carbon\Carbon::parse($task->start_time);
+                                                    $endTime = \Carbon\Carbon::parse($task->end_time);
+                                                @endphp
+                                                {{ $startTime->format('h:mA') }}-{{ $endTime->format('h:mA') }}</p>
                                         </td>
                                         <td class="table-border2 rounded text-center">{{ $task->preffred_program }}</td>
                                         <td class="table-border2 rounded text-center">{{ $task->to_be_done }}</td>
@@ -73,9 +77,19 @@
                                         </td>
                                         <td class="table-border2 rounded text-center">{{ $task->note }}</td>
                                         <td class="table-border2 rounded text-center">
+                                            @php
+                                                // Make sure to create Carbon instances from the time strings
+                                                $startTime = Carbon\Carbon::parse($task->start_time);
+                                                $endTime = Carbon\Carbon::parse($task->end_time);
+
+                                                // Calculate the difference
+                                                $difference = $endTime->diff($startTime);
+                                            @endphp
                                             <p class="text-nowrap" style="margin: 0px;">
-                                                {{ $task->accumulated_hours == null ? 0 : $task->accumulated_hours }} /
-                                                {{ $task->number_of_sa * 90 }}</p>
+                                                {{-- {{ $task->accumulated_hours == null ? 0 : $task->accumulated_hours }} /
+                                                {{ $task->number_of_sa * 90 }} --}}
+                                                {{ $difference->h }}@if ($difference->i != 0 || $difference->i != null):{{$difference->i}}@endif
+                                            </p>
                                         </td>
                                         <td class="table-border2 rounded text-center">
                                             <a href="{{ route('sa.manager.saList', ['task_id' => $task->task_id, 'list' => 'on-going']) }}"

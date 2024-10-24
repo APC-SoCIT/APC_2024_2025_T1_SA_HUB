@@ -54,6 +54,9 @@ class User extends Authenticatable implements MustVerifyEmail
     public function saProfile(){
         return $this->belongsTo(SaProfile::class,'id_number', 'user_id');
     }
+    public function profile(){
+        return $this->belongsTo(SaProfile::class,'id_number', 'user_id');
+    }
 
     public function tasks()
     {

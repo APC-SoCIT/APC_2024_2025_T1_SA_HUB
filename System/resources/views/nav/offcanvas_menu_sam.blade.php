@@ -1,6 +1,5 @@
 <div class="offcanvas offcanvas-start border-nav-end" tabindex="-1" id="offcanvas-1">
     <div class="offcanvas-header border-bottom text-end">
-        <img class="img" src="https://placehold.co/50" alt="">
         <h5 class="offcanvas-title w-100 pe-2 text-accent2">{{ Auth::user()->username }}
             <em class="fw-smaller">{{ Auth::user()->email }}</em>
         </h5>

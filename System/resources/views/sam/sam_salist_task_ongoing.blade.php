@@ -43,15 +43,42 @@
                             @foreach ($saLists as $saList)
                                 <tr>
                                     <td class="table-border2 rounded text-center">{{ $saList->user_id }}</td>
-                                    <td class="table-border2 rounded text-center">{{ $saList->first_name }}
-                                        {{ $saList->last_name }}</td>
-                                    <td class="table-border2 rounded text-center">{{ $saList->course_program }}</td>
                                     <td class="table-border2 rounded text-center">
-                                        {{ $saList->timein == null ? 'No Time-In Yet' : $saList->timein }}
+                                        @if ($status == 1)
+                                            {{ $saList->first_name }}
+                                            {{ $saList->last_name }}
+                                        @elseif($status == 2)
+                                            {{ $saList->user->saProfile->first_name }}
+                                            {{ $saList->user->saProfile->last_name }}
+                                        @endif
+                                    </td>
+                                    <td class="table-border2 rounded text-center">
+                                        @if ($status == 1)
+                                            {{ $saList->course_program }}
+                                        @elseif($status == 2)
+                                            {{ $saList->user->saProfile->course_program }}
+                                        @endif
+                                    </td>
+                                    @php
+                                        $timein = \Carbon\Carbon::parse($saList->timein);
+                                        $time_in = \Carbon\Carbon::parse($saList->time_in);
+                                        $timeout = \Carbon\Carbon::parse($saList->timeout);
+                                        $time_out = \Carbon\Carbon::parse($saList->time_out);
+                                    @endphp
+                                    <td class="table-border2 rounded text-center">
+                                        @if ($status == 1)
+                                            {{ $saList->timein == null ? 'No Time-In Yet' : $timein->format('h:m A') }}
+                                        @elseif($status == 2)
+                                            {{ $saList->time_in == null ? 'No Time-In Yet' : $time_in->format('h:m A') }}
+                                        @endif
                                     </td>
 
                                     <td class="table-border2 rounded text-center">
-                                        {{ $saList->timeout == null ? 'No Time-Out Yet' : $saList->timeout }}
+                                        @if ($status == 1)
+                                            {{ $saList->timeout == null ? 'No Time-Out Yet' : $timeout->format('h:m A') }}
+                                        @elseif($status == 2)
+                                            {{ $saList->time_out == null ? 'No Time-Out Yet' : $time_out->format('h:m A') }}
+                                        @endif
                                     </td>
 
                                     <td class="table-border2 rounded text-center">
@@ -61,10 +88,18 @@
                                         {{ $saList->feedback ? $saList->feedback : 'No Feedback' }}
                                     </td>
                                     <td class="table-border2 rounded text-center">
-                                        <button class="btn background-accent1 {{ $saList->timeout ? '' : 'disable' }}"
+                                        <button
+                                            class="btn background-accent1
+                                            @if ($status == 1) {{ $saList->timeout ? '' : 'disable' }} @endif  "
                                             type="button" data-bs-toggle="modal"
                                             data-bs-target="#editHoursModal-{{ $saList->timelogId }}">
-                                            {{ $saList->timeout ? 'Edit Hour/s' : 'No Time-out' }}
+                                            {{-- {{ $saList->timeout ? 'Edit Hour/s' : 'No Time-out' }} --}}
+
+                                            @if ($status == 1)
+                                                {{ $saList->timeout ? 'Edit Hour/s' : 'No Time-out' }}
+                                            @elseif($status == 2)
+                                                {{ $saList->time_out ? 'Edit Hour/s' : 'No Time-out' }}
+                                            @endif
                                         </button>
                                         @include('modals.edit_hours')
                                     </td>

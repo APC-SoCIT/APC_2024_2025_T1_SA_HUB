@@ -31,7 +31,7 @@ class DatabaseSeeder extends Seeder
             OffenseSeeder::class,
             ScholarshipSeeder::class,
             TaskSeeder::class,
-            UserTaskSeeder::class,
+            // UserTaskSeeder::class,
         ]);
     }
 }

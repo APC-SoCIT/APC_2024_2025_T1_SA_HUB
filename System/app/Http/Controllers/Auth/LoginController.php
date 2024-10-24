@@ -24,8 +24,6 @@ class LoginController extends Controller
 
     protected function authenticated(Request $request, $user)
     {
-        // $snake_case = Str::snake($string);
-        // dd($request->portal_details, $user->getRoleNames()->first());
         if ($user->hasRole('office_admin') ) {
             return redirect()->route('office.dashboard'); // Redirect to office_admin dashboard
         } elseif ($user->hasRole('sa_manager')) {

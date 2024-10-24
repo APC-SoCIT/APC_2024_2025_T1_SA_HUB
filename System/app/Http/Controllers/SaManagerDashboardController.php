@@ -26,11 +26,9 @@ class SaManagerDashboardController extends Controller
 
     public function probation()
     {
-        $probationList = SaProfile::whereIn('status', ['probation'])->with('offenses')->get();
-        $saLists = SaProfile::where('status', '=', 'probation')->get();
-        $Sa = SaProfile::whereIn('status', ['probation', 'revoked'])->with('offenses')->get();
-        $probationList = Offense::where('type', 'major')->get();
-        return view('sam.sam_probation', compact('probationList', 'saLists'));
+
+        $probationList = Offense::where('type', 'major')->where('status', 'probation')->get();
+        return view('sam.sam_probation', compact('probationList'));
     }
 
     public function addProbation()
@@ -42,12 +40,7 @@ class SaManagerDashboardController extends Controller
 
     public function revoke()
     {
-        // $SaLists = SaProfile::whereIn('status', ['probation', 'revoked'])->with('offenses')->get();
-        // $SaLists = Offense::where('type', 'major')->get();
-        // dd($SaLists);
-        // $SaLists = $Sa;
-        $SaLists = Offense::distinct('user_id')->where('type', 'major')->get();
-        // dd($SaLists);
+        $SaLists = Offense::distinct('user_id')->where('type', 'major')->where('status', 'revoked')->get();
         return view('sam.sam_revoke', compact('SaLists'));
     }
 
@@ -88,17 +81,17 @@ class SaManagerDashboardController extends Controller
 
     public function setToProbation(Request $request, $saProfileID)
     {
-        $saProfile = SaProfile::where('user_id','=', $saProfileID)->update(['status'=> 'probation']);
-        $offense = Offense::where('user_id', $saProfileID)->update(['status'=> 'probation']);
+        $saProfile = SaProfile::where('user_id', '=', $saProfileID)->update(['status' => 'probation']);
+        $offense = Offense::where('user_id', $saProfileID)->update(['status' => 'probation']);
 
         return redirect()->back()->with('success', 'Status Updated to Probation');
     }
 
     public function setToRevoke(Request $request, $saProfileID)
     {
-        $saProfile = SaProfile::where('user_id','=', $saProfileID)->update(['status'=> 'revoked']);
+        $saProfile = SaProfile::where('user_id', '=', $saProfileID)->update(['status' => 'revoked']);
         $user = User::where('id_number', '=', $saProfileID)->delete();
-        $offense = Offense::where('user_id', $saProfileID)->update(['status'=> 'revoked']);
+        $offense = Offense::where('user_id', $saProfileID)->update(['status' => 'revoked']);
         return redirect()->back()->with('success', 'Status updated to revoked');
     }
 
@@ -154,7 +147,7 @@ class SaManagerDashboardController extends Controller
             ->groupBy('user_tasks_timelog.task_id', 'tasks.start_date', 'tasks.start_time', 'tasks.end_time', 'tasks.number_of_sa', 'tasks.preffred_program', 'tasks.to_be_done', 'tasks.assigned_office', 'tasks.note', 'task_status') // Group by all non-aggregated columns
             ->orderBy('user_tasks_timelog.task_id', 'asc')
             ->get();
-                // dd($assignedTasks);
+        // dd($assignedTasks);
         return view('sam.sam_dashboard_done', compact('assignedTasks', 'user'));
     }
 
@@ -167,13 +160,9 @@ class SaManagerDashboardController extends Controller
         $saList = 0;
         if ($list == 'on-going') {
             $saList = 1;
-        } elseif ($list == 'completed') {
-            $saList = 2;
-        }
-
-        $saLists = User::join('user_tasks_timelog', 'users.id', '=', 'user_tasks_timelog.user_id')
+            $saLists = SaProfile::join('users', 'sa_profiles.user_id', '=', 'users.id_number')
+            ->join('user_tasks_timelog', 'users.id', '=', 'user_tasks_timelog.user_id')
             ->join('tasks', 'user_tasks_timelog.task_id', '=', 'tasks.id')
-            ->join('sa_profiles', 'users.id_number', '=', 'sa_profiles.user_id')
             ->select(
                 'sa_profiles.user_id',
                 'sa_profiles.first_name',
@@ -182,16 +171,18 @@ class SaManagerDashboardController extends Controller
                 'user_tasks_timelog.id AS timelogId',
                 DB::raw('DATE_FORMAT(user_tasks_timelog.time_in, "%H:%i") AS timein'),
                 DB::raw('DATE_FORMAT(user_tasks_timelog.time_out, "%H:%i") AS timeout'),
-                // 'user_tasks_timelog.is_Approved_in',
-                // 'user_tasks_timelog.is_Approved_out',
                 'user_tasks_timelog.total_hours',
                 'user_tasks_timelog.feedback'
             )
-            ->where('tasks.id', '=', $taskId)
+            ->where('tasks.id', $taskId)
             ->where('user_tasks_timelog.task_status', $saList)
             ->get();
-                // dd($saLists);
-        return view('sam.sam_salist_task_ongoing', compact('saLists', 'user', 'taskId'));
+        } elseif ($list == 'completed') {
+            $saList = 2;
+            $saLists = SaTaskTimeLog::where('task_status', $saList)->where('task_id', $taskId)->get();
+        }
+        $status = $saList;
+        return view('sam.sam_salist_task_ongoing', compact('saLists', 'user', 'taskId', 'status'));
     }
 
     public function acceptTimeIn($id)
@@ -252,7 +243,7 @@ class SaManagerDashboardController extends Controller
             ->where('tasks.id', '=', $taskId)
             ->where('user_tasks_timelog.task_status', '=', 2)
             ->get();
-                dd($saLists);
+        dd($saLists);
         return view('sam.sam_salist_task_done', compact('saLists', 'user', 'taskId'));
     }
 
