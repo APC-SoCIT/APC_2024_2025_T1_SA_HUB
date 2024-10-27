@@ -35,7 +35,7 @@
                     <thead class="background-accent1">
                         <tr>
                             <th class="table-border2 rounded">Name</th>
-                            <th class="table-border2 rounded">Reason</th>
+                            <th class="table-border2 rounded">Major Offense</th>
                             <th class="table-border2 rounded">Start Date</th>
                             <th class="table-border2 rounded">End Date</th>
                         </tr>
@@ -57,7 +57,7 @@
                                         {{ $task->saProfile->last_name }}
                                     </td>
                                     <td class="table-border2 rounded text-center">
-                                        Major Offense ({{ $task->description }})
+                                        {{ $task->description }}
                                         {{-- @foreach ($task->offenses as $offense)
                                             {{ $offense->description }}
                                             @if ($offense->type == 'grade')

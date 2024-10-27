@@ -13,8 +13,8 @@
                         <div class="card login background-accent2 text-accent1 py-1 py-md-3 mb-2">
                             {{-- <div class="card-header">{{ __('Login') }}</div> --}}
                             <div class="card-body d-flex flex-column align-items-center">
-                                <img class="img mb-2 d-none d-md-block" src="{{ asset('images/logo2.png') }}" alt=""
-                                    width="100px">
+                                {{-- <img class="img mb-2 d-none d-md-block" src="{{ asset('images/logo2.png') }}" alt=""
+                                    width="100px"> --}}
                                     <h1>{{$portalName}}</h1>
                                 <h2 class="mb-5 text-capitalize font-monospace">{{ __('Log in') }}</h2>
                                 <form class="login-form" method="POST" action="{{ route('login') }}">

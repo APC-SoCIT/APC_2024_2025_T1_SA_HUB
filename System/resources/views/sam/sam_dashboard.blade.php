@@ -2,59 +2,170 @@
 
 @section('title', 'Dashboard - Student Assistant Manager')
 
-@section('content')
-    <!-- Your content here -->
-    @include('include.nav_bar')
 
-    <div>
-        <div class="d-flex d-lg-flex justify-content-center justify-content-lg-center align-items-lg-center"
-            style="padding: 3em;">
-            <div class="row">
-                <div class="col text-center" style="margin: auto;border-bottom-style: none;padding: 1em;"><button
-                        class="btn btn-primary" type="button"
-                        style="width: 20em;background: #f6a903;color: rgb(0,0,0);font-weight: bold;height: 3em;font-size: 1em;border-style: none;border-top-style: none;border-right-style: none;border-bottom-style: none;border-left-style: none;">On-Going</button>
-                </div>
-                <div class="col text-center" style="margin: auto;padding: 1em;"><button class="btn btn-primary" type="button"
-                        style="width: 20em;background: #f6a903;color: rgb(0,0,0);font-weight: bold;margin: auto;height: 3em;font-size: 1em;border-style: none;border-top-style: none;border-right-style: none;border-bottom-style: none;border-left-style: none;">Done</button>
+@section('content')
+    @include('include.nav_bar')
+    <div class="container">
+        <div class="row">
+            <div class="col m-0 ps-0">
+                <div class="main-background">
+                    <div class="pt-3">
+                        <h2>Dashboard</h2>
+                    </div>
+                    <div class="p-3">
+                        <div class="row">
+                            <div class="col-md-4 col-xl-3">
+                                <div class="card ">
+                                    <div class="bg-success py-2 px-3 text-dark bg-opacity-50 bg-gradient shadow">
+                                        <h6 class="h4">Active SA</h6>
+                                        <h2 class="text-right"><i
+                                                class="fa fa-cart-plus f-left"></i><span></span>{{ $activeSA }}</h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-xl-3">
+                                <div class="card">
+                                    <div class="bg-warning py-2 px-3 text-dark bg-opacity-50 bg-gradient shadow">
+                                        <h6 class="h4">Inactive SA</h6>
+                                        <h2 class="text-right"><i
+                                                class="fa fa-cart-plus f-left"></i><span>{{ $inactiveSA }}</span></h2>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 col-xl-3">
+                                <div class="card">
+                                    <div class="bg-info py-2 px-3 text-dark bg-opacity-50 bg-gradient shadow">
+                                        <h6 class="h4">Total SA</h6>
+                                        <h2 class="text-right"><i
+                                                class="fa fa-cart-plus f-left"></i><span>{{ $totalSA }}</span></h2>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="p-3 h-25">
+                        <div class="row">
+                            <div class="col-5 mb-3">
+                                <div class="card px-4 py-3 shadow">
+                                    <canvas id="myChart"> </canvas>
+                                </div>
+                            </div>
+                            <div class="col-7 mb-3">
+                                <div class="card h-100 px-4 py-3 shadow">
+                                    <canvas class="" id="studTaskActivity"> </canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </div>
-        <div style="padding: 3em;border-top-style: groove;">
-            <section>
-                <h1>Assigned Tasks</h1>
-                <div class="table-responsive" style="padding: 1em;">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th scope="col" style="background: #FFBD59;">TASK NO.</th>
-                                <th scope="col" style="background: #FFBD59;">dATE &amp; tIME</th>
-                                <th scope="col" style="background: #FFBD59;">pROGRAM</th>
-                                <th style="background: #FFBD59;">Task</th>
-                                <th style="background: #FFBD59;">Office</th>
-                                <th style="background: #FFBD59;">Note</th>
-                                <th style="background: #FFBD59;">Hours</th>
-                                <th style="background: #FFBD59;">SA</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <tr>
-                                <td data-label="Attributes" scope="row" style="background: #faf3d8;">Attribute 1</td>
-                                <td data-label="Base Class" style="background: #faf3d8;">Cell 2</td>
-                                <td data-label="Simulated Case" style="background: #faf3d8;">Cell 3</td>
-                                <td style="background: #faf3d8;">Cell 4</td>
-                                <td style="background: #faf3d8;">Cell 5</td>
-                                <td style="background: #faf3d8;">Cell 6</td>
-                                <td style="background: #faf3d8;">Cell 7</td>
-                                <td style="background: #faf3d8;"><button class="btn btn-primary" type="button"
-                                        style="background: #FFBD59;color: rgb(0,0,0);font-weight: bold;font-size: .7em;border-style: none;"
-                                        data-bs-toggle="modal" data-bs-target="#task-1">View # SA</button></td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </div>
-            </section>
-        </div>
     </div>
+    @include('nav.offcanvas_menu_sam')
+@endsection
 
-    @include('include.offcanvas_menu')
+@section('scripts')
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <script>
+        const activeScholar = @json($activeScholar);
+        const probationScholar = @json($probationScholar);
+        const revokedScholar = @json($revokedScholar);
+
+        const zeroProbation = @json($zeroProbation);
+        const zeroRevoked = @json($zeroRevoked);
+        const majorProbation = @json($majorProbation);
+        const majorRevoked = @json($majorRevoked);
+        const ctx = document.getElementById('myChart');
+        const studAct = document.getElementById('studTaskActivity');
+        new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Active Scholar', 'Under Probation', 'Revoked Sholarship'],
+                datasets: [{
+                    label: ' # Student Assistant',
+                    data: [activeScholar, probationScholar, revokedScholar],
+                    backgroundColor: ["#1A2E40", "#FFC300", "#E74C3C"],
+                    borderWidth: 3
+                }]
+            },
+            options: {
+                // scales: {
+                //     y: {
+                //         beginAtZero: true
+                //     }
+                // }
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Scholarship Status'
+                    },
+                }
+            }
+        });
+
+        new Chart(studAct, {
+            type: 'bar',
+            data: {
+                labels: ['0.0', 'Major Offense'], // Categories for the X-axis
+                datasets: [{
+                        label: 'On Probation',
+                        data: [zeroProbation,
+                            majorProbation
+                        ], // Replace with actual counts for 0.0 grade revoked and probation
+                        backgroundColor: 'rgba(0, 22, 62, .2)', // Color for probation Grade
+                        borderColor: 'rgba(0, 22, 62, 1)',
+                        borderWidth: 1
+                    },
+                    {
+                        label: 'Revoked Scholarship',
+                        data: [zeroRevoked,
+                            majorRevoked
+                        ], // Replace with actual counts for major offense revoked and probation
+                        backgroundColor: 'rgba(231, 175, 65, .2)', // Color for revoked scholarship
+                        borderColor: 'rgba(231, 175, 65, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: 'Student Assistant'
+                        }
+                    },
+                    x: {
+                        title: {
+                            display: true,
+                            text: 'Status'
+                        }
+                    }
+                },
+                plugins: {
+                    title: {
+                        display: true,
+                        text: 'Offense Status'
+                    },
+                    legend: {
+                        position: 'top'
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function(tooltipItem) {
+                                return tooltipItem.dataset.label + ': ' + tooltipItem.raw;
+                            }
+                        }
+                    }
+                },
+                responsive: true, // Ensure the chart is responsive
+                maintainAspectRatio: false,
+                resizeDelay: 1000,
+            }
+        });
+    </script>
 @endsection

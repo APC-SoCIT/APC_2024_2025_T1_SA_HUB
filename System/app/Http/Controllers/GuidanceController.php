@@ -20,12 +20,12 @@ class GuidanceController extends Controller
     public function dashboard()
     {
         // Guidance Dashboard Cards
-        $totalSA = SaProfile::whereIn('status', ['active'])->whereNotIn('status', ['probation', 'revoked'])->count();
+        $totalSA = SaProfile::whereIn('status', ['active', 'pending_revoke', 'probation'])->whereNotIn('status', ['revoked'])->count();
         $activeSA = $this->countActiveSa();
         $inactiveSA = $totalSA - $activeSA;
 
         //Scholarship Status Pie Chart
-        $activeScholar = SaProfile::where('status', '=', 'active')->count();
+        $activeScholar = SaProfile::whereIn('status',['active','pending_revoke'])->count();
         $probationScholar = SaProfile::where('status', '=', 'probation')->count();
         $revokedScholar = SaProfile::where('status', '=', 'revoked')->count();
 
@@ -154,7 +154,11 @@ class GuidanceController extends Controller
         if ($user && $user->trashed()) {
             $user->restore(); // Restore the soft-deleted user
             SaProfile::where('user_id', $user->id_number)->update(['status' => "active"]);
-            return redirect()->back()->with('success', 'User cancelled revoke successfully.');
+            $withOffense = Offense::where('user_id', $user->id_number)->where('type','grade')->get();
+            foreach ($withOffense as $offense) {
+                $offense->delete();
+            }
+            return redirect()->back()->with('success', 'SA Restored as Active Successfully.');
         }
 
         return redirect()->back()->with('error', 'User not found or already active.');

@@ -8,9 +8,9 @@
     <div class="main-background p-4 py-0 ">
         <div class="mt-3">
             <div class="pb-3 pt-2 border-bottom-accent2 row" style="padding: 3em;">
-                <div class="col-2 ">
+                {{-- <div class="col-2 ">
                     <img class="img float-end" src="https://placehold.co/200" alt="">
-                </div>
+                </div> --}}
                 <div class="col">
                     {{-- @foreach ($userProfiles as $userProfile) --}}
                     <div class="d-lg-flex align-items-lg-center mt-2">
@@ -106,7 +106,7 @@
                                 {{ $render->total_hours }}
                             @endif
                         @endforeach
-                        / {{ $taskHistories->total() * 90 }} Hour(s) Rendered
+                        / 90 Hour(s) Rendered
                     </h6>
                     <div class="table-responsive" style="padding: 1em;">
                         <table class="table table-hover table-border rounded">
@@ -129,6 +129,8 @@
                                     @php
                                         $startTime = \Carbon\Carbon::parse($taskHistory->start_time);
                                         $endTime = \Carbon\Carbon::parse($taskHistory->end_time);
+                                        $time_in = \Carbon\Carbon::parse($taskHistory->time_in);
+                                        $time_out = \Carbon\Carbon::parse($taskHistory->time_out);
                                     @endphp
                                     <tr class="text-center">
                                         <td class="table-border2 rounded" data-label="Task No." scope="row">
@@ -140,10 +142,10 @@
                                             </p>
                                         </td>
                                         <td class="table-border2 rounded" data-label="Time In">
-                                            {{ $taskHistory->time_in ?? 'No Time-In Yet' }}
+                                            {{ $time_in->format('h:mA') ?? 'No Time-In Yet' }}
                                         </td>
                                         <td class="table-border2 rounded" data-label="Time Out">
-                                            {{ $taskHistory->time_out ?? 'No Time-Out Yet' }}
+                                            {{ $time_out->format('h:mA') ?? 'No Time-Out Yet' }}
                                         </td>
                                         <td class="table-border2 rounded" data-label="Total Hours">
                                             {{ $taskHistory->total_hours ?? 'No Rendered Hrs' }}

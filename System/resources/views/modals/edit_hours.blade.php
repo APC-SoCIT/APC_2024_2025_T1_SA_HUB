@@ -9,7 +9,7 @@
                             <div class="d-xl-flex align-items-xl-center">
                                 <h5>Edit Hour/s:</h5>
                                 <input class="form-control" type="number" name="add_hours" />
-                                <input type="hidden" name="timelog_id"  value="{{$saList->timelogId}}"/>
+                                <input type="hidden" name="timelog_id"  value="{{$saList->timelogId ? $saList->timelogId : $saList->id}}"/>
                             </div>
                         </div>
                     <div class="modal-footer">

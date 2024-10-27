@@ -24,6 +24,63 @@ class SaManagerDashboardController extends Controller
         return view('sam.sam_dashboard');
     }
 
+    public function dashboard()
+    {
+        // Guidance Dashboard Cards
+        $totalSA = SaProfile::whereIn('status', ['active', 'pending_revoke', 'probation'])->whereNotIn('status', ['revoked'])->count();
+        $activeSA = $this->countActiveSa();
+        $inactiveSA = $totalSA - $activeSA;
+
+        //Scholarship Status Pie Chart
+        $activeScholar = SaProfile::whereIn('status',['active','pending_revoke'])->count();
+        $probationScholar = SaProfile::where('status', '=', 'probation')->count();
+        $revokedScholar = SaProfile::where('status', '=', 'revoked')->count();
+
+        // Offence Status Bar Chart
+        $zeroProbation = Offense::where('type', 'grade')
+            ->whereHas('saProfile', function ($query) {
+                $query->where('status', 'probation');
+            })
+            ->count();
+        $zeroRevoked = Offense::where('type', 'grade')
+            ->whereHas('saProfile', function ($query) {
+                $query->where('status', 'revoked');
+            })
+            ->count();
+        $majorProbation = Offense::where('type', 'major')
+            ->whereHas('saProfile', function ($query) {
+                $query->where('status', 'probation');
+            })
+            ->count();
+        $majorRevoked = Offense::where('type', 'major')
+            ->whereHas('saProfile', function ($query) {
+                $query->where('status', 'revoked');
+            })
+            ->count();
+
+        return view('sam.sam_dashboard', compact('totalSA', 'activeSA', 'inactiveSA', 'activeScholar', 'probationScholar', 'revokedScholar', 'zeroProbation', 'zeroRevoked', 'majorRevoked', 'majorProbation'));
+    }
+
+    private function countActiveSa()
+    {
+        // Get tasks with student assistants where the pivot table status is 'active'
+        $tasks = Task::with([
+            'studentAssistants' => function ($query) {
+                // Only include active student assistants
+                $query->wherePivot('task_status', '1');
+            }
+        ])->distinct()->get();
+
+        // Initialize a count for active student assistants
+        $activeSA = 0;
+
+        // Loop through each task to count the number of active student assistants
+        foreach ($tasks as $task) {
+            $activeSA += $task->studentAssistants->count(); // Count active SAs in each task
+        }
+        return $activeSA;
+    }
+
     public function probation()
     {
 
@@ -40,7 +97,7 @@ class SaManagerDashboardController extends Controller
 
     public function revoke()
     {
-        $SaLists = Offense::distinct('user_id')->where('type', 'major')->where('status', 'revoked')->get();
+        $SaLists = Offense::distinct('user_id')->where('type', 'major')->where('status', 'pending_revoke')->get();
         return view('sam.sam_revoke', compact('SaLists'));
     }
 
@@ -52,7 +109,7 @@ class SaManagerDashboardController extends Controller
             // 'type' => 'major',
             'description' => 'required|string',
             'status' => 'required|string',
-            'date_start' => 'nullable|date',
+            'date_start' => 'nullable|date|after_or_equal:now',
             'date_end' => 'nullable|date|after_or_equal:date_start', // Ensure the end date is after the start date
         ]);
 
@@ -74,7 +131,7 @@ class SaManagerDashboardController extends Controller
             ]);
         }
 
-        $user = User::where('id_number', '=', $saProfile->user_id)->delete();
+        // $user = User::where('id_number', '=', $saProfile->user_id)->delete();
 
         return redirect()->route('sa.manager.probation')->with('success', "Added a New Offense");
     }
@@ -93,6 +150,13 @@ class SaManagerDashboardController extends Controller
         $user = User::where('id_number', '=', $saProfileID)->delete();
         $offense = Offense::where('user_id', $saProfileID)->update(['status' => 'revoked']);
         return redirect()->back()->with('success', 'Status updated to revoked');
+    }
+
+    public function cancelPendingRevoke(Request $request, $saProfileID, $offenseId)
+    {
+        $saProfile = SaProfile::where('user_id', '=', $saProfileID)->update(['status' => 'active']);
+        $offense = Offense::where('id', $offenseId)->delete();
+        return redirect()->back()->with('success', 'Removed in Revoke Page');
     }
 
     public function onGoing()
@@ -161,22 +225,22 @@ class SaManagerDashboardController extends Controller
         if ($list == 'on-going') {
             $saList = 1;
             $saLists = SaProfile::join('users', 'sa_profiles.user_id', '=', 'users.id_number')
-            ->join('user_tasks_timelog', 'users.id', '=', 'user_tasks_timelog.user_id')
-            ->join('tasks', 'user_tasks_timelog.task_id', '=', 'tasks.id')
-            ->select(
-                'sa_profiles.user_id',
-                'sa_profiles.first_name',
-                'sa_profiles.last_name',
-                'sa_profiles.course_program',
-                'user_tasks_timelog.id AS timelogId',
-                DB::raw('DATE_FORMAT(user_tasks_timelog.time_in, "%H:%i") AS timein'),
-                DB::raw('DATE_FORMAT(user_tasks_timelog.time_out, "%H:%i") AS timeout'),
-                'user_tasks_timelog.total_hours',
-                'user_tasks_timelog.feedback'
-            )
-            ->where('tasks.id', $taskId)
-            ->where('user_tasks_timelog.task_status', $saList)
-            ->get();
+                ->join('user_tasks_timelog', 'users.id', '=', 'user_tasks_timelog.user_id')
+                ->join('tasks', 'user_tasks_timelog.task_id', '=', 'tasks.id')
+                ->select(
+                    'sa_profiles.user_id',
+                    'sa_profiles.first_name',
+                    'sa_profiles.last_name',
+                    'sa_profiles.course_program',
+                    'user_tasks_timelog.id AS timelogId',
+                    DB::raw('DATE_FORMAT(user_tasks_timelog.time_in, "%H:%i") AS timein'),
+                    DB::raw('DATE_FORMAT(user_tasks_timelog.time_out, "%H:%i") AS timeout'),
+                    'user_tasks_timelog.total_hours',
+                    'user_tasks_timelog.feedback'
+                )
+                ->where('tasks.id', $taskId)
+                ->where('user_tasks_timelog.task_status', $saList)
+                ->get();
         } elseif ($list == 'completed') {
             $saList = 2;
             $saLists = SaTaskTimeLog::where('task_status', $saList)->where('task_id', $taskId)->get();
@@ -243,12 +307,13 @@ class SaManagerDashboardController extends Controller
             ->where('tasks.id', '=', $taskId)
             ->where('user_tasks_timelog.task_status', '=', 2)
             ->get();
-        dd($saLists);
+
         return view('sam.sam_salist_task_done', compact('saLists', 'user', 'taskId'));
     }
 
     public function editHours(Request $request)
     {
+        // dd($request->all());
         // Validate the incoming request data
         $request->validate([
             'add_hours' => 'required|numeric',

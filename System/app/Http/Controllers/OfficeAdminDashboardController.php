@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Offense;
 use Illuminate\Support\Facades\Log;
 use App\Models\SaTaskTimeLog;
 use App\Models\SaProfile;
@@ -124,19 +125,16 @@ class OfficeAdminDashboardController extends Controller
 
     public function addFeedback(Request $request)
     {
-        $timeLogId = $request->input('timelogId');
-        $feedback = $request->input('feedback');
-
         // Retrieve the specific time log using first()
-        $timeLog = SaTaskTimeLog::where('id', $timeLogId)
+        $timeLog = SaTaskTimeLog::where('id', $request->timelogId)
             ->whereNotNull('time_out')
             ->first();
 
         if ($timeLog) {
-            $timeLog->feedback = $feedback;
+            $timeLog->feedback = $request->feedback;
             $timeLog->save();
 
-            return redirect()->back()->with('success', 'Feedback saved successfully!');
+            return redirect()->route('office.saList.complete', $timeLog->task_id)->with('success', 'Feedback saved successfully!');
         } else {
             // Handle the error case where a time log is not found
             return redirect()->back()->with('error', 'Cannot provide feedback before the time out is recorded.');
@@ -190,12 +188,14 @@ class OfficeAdminDashboardController extends Controller
         )
             ->where('task_status', '=', 2)
             ->groupBy('user_id')
+            ->having('total_rendered_hours', '=', 90)
             ->get();
 
         // Select the appropriate list based on status
         $saLists = $status === 'ongoing' ? $saListsOngoing : $saListsCompleted;
-// dd($saLists);
-        return view('reports.sa_report', compact('status', 'saLists', 'user'));
+        // dd($saLists);
+        $offenses = Offense::whereIn('user_id', $saLists->pluck('user.id_number'))->get()->keyBy('user_id');
+        return view('reports.sa_report', compact('status', 'saLists', 'user', 'offenses'));
     }
 
 
@@ -264,7 +264,7 @@ class OfficeAdminDashboardController extends Controller
             'note' => 'nullable|string',
         ]);
 
-         if ($validator->fails()) {
+        if ($validator->fails()) {
             // Flash the error messages to the session
             return redirect()->back()->withErrors($validator)->withInput();
         }

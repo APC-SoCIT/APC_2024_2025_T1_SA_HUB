@@ -7,7 +7,6 @@
             </div>
             <form action="{{ route('office.feedback') }}" method="post">
                 @csrf
-                @method('PUT')
                 <div class="modal-body">
                     <div class="row">
                         @php
@@ -45,7 +44,7 @@
                                 <h5 class="text-start d-xl-flex">Feedback</h5>
                                 <textarea style="width: 100%;" name="feedback"
                                     placeholder="{{ $saList->feedback ? $saList->feedback : 'Add Feedback' }}"></textarea>
-                                <input type="hidden" name="timelogId" value="{{ $saList->timelogId }}">
+                                <input type="hidden" name="timelogId" value="{{ $saList->id }}">
                             </div>
                         </div>
 
@@ -53,7 +52,8 @@
                 </div>
                 <div class="modal-footer d-xl-flex justify-content-xl-center">
                     <button class="btn btn-light" type="button" data-bs-dismiss="modal">Close</button>
-                    <button class="btn {{ $saList->feedback ? 'background-accent1 text-accent2' : 'background-accent2 text-accent1 ' }}"
+                    <button
+                        class="btn {{ $saList->feedback ? 'background-accent1 text-accent2' : 'background-accent2 text-accent1 ' }}"
                         type="submit">{{ $saList->feedback ? 'Update Feedback' : 'Add Feedback' }}</button>
                 </div>
             </form>

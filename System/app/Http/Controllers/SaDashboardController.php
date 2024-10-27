@@ -62,32 +62,6 @@ class SaDashboardController extends Controller
         return $user;
     }
 
-    // public  function acceptTask(Task $task){
-    //     $user = $this->getuserID();
-
-    //     $hasConflict = SaTaskTimeLog::where('user_id', $user->id)
-    //         ->join('tasks', 'user_tasks_timelog.task_id', '=', 'tasks.id')
-    //         ->where(function ($query) use ($task) {
-    //             $query->where('tasks.start_time', '<', $task->end_time)
-    //                 ->where('tasks.end_time', '>', $task->start_time);
-    //         })
-    //         ->exists();
-
-    //     if ($hasConflict) {
-    //         session()->flash('error', 'Cannot accept task due to time conflict with existing tasks.');
-    //         return redirect()->route('sa.dashboard');
-    //     }
-
-    //     $userTask = new SaTaskTimeLog();
-    //     $userTask->user_id = $user->id;
-    //     $userTask->task_id = $task->id;
-    //     $userTask->task_status = true;
-    //     $userTask->save();
-
-    //     session()->flash('accept_task_success', 'Task accepted successfully!');
-    //     return redirect()->route('sa.dashboard');
-    // }
-
     public function acceptTask(Task $task)
     {
         $user = $this->getuserID();
@@ -158,7 +132,7 @@ class SaDashboardController extends Controller
             ->join('tasks', 'user_tasks_timelog.task_id', '=', 'tasks.id')
             ->join('users', 'user_tasks_timelog.user_id', '=', 'users.id')
             ->where('users.id', $user->id)
-            ->where('task_status', 2)
+            // ->where('task_status', 2)
             ->select(
                 DB::raw('SUM(user_tasks_timelog.total_hours) as total_hours'),
             )
@@ -307,10 +281,5 @@ class SaDashboardController extends Controller
         } else {
             return redirect()->back()->with('error', 'No matching time-in record found or time-in is less than 30 minutes ago.');
         }
-    }
-
-    public function probationDateChecker(){
-        $grade = StudentGrade::where('final_grade', '=', '0.0')->get();
-
     }
 }

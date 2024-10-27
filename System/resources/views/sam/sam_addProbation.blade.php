@@ -74,8 +74,8 @@
                                         <option></option>
                                         {{-- <option class="low-grade-option" style="display: none;" value="0.0">0.0</option> --}}
                                         @foreach ($OffenseLists as $offense)
-                                            <option class="major-offense-option"
-                                                value="{{ $offense->offense_name }}">{{ $offense->offense_name }}</option>
+                                            <option class="major-offense-option" value="{{ $offense->offense_name }}">
+                                                {{ $offense->offense_name }}</option>
                                         @endforeach
                                     </select>
                                 </div>
@@ -99,7 +99,7 @@
                                 </div>
                                 <div class="form-check ms-3">
                                     <input class="custom-radio @error('status') is-invalid @enderror" type="radio"
-                                        name="status" id="statusOption2" value="revoked" />
+                                        name="status" id="statusOption2" value="pending_revoke" />
                                     <label class="form-check-label" for="statusOption2">Revoke Scholarship</label>
                                 </div>
                                 @error('status')
@@ -112,9 +112,10 @@
                         <div class="row">
                             <div class="mb-3">
                                 <label id="dateStartLabel"
-                                    class="form-label fw-bolder @error('date_start') is-invalid @enderror">Date
-                                    Started</label>
-                                <input type="date" class="form-control" name="date_start" id=""
+                                    class="form-label fw-bolder @error('date_start') is-invalid @enderror">
+                                    Date Started
+                                </label>
+                                <input type="date" class="form-control" name="date_start" id="date_start"
                                     aria-describedby="helpId" placeholder="" />
                                 @error('date_start')
                                     <div class="invalid-feedback">
@@ -124,9 +125,10 @@
                             </div>
                             <div class="mb-3">
                                 <label for="" id="dateEndLabel"
-                                    class="form-label fw-bolder @error('date_end') is-invalid @enderror">Date
-                                    Ended</label>
-                                <input type="date" class="form-control" name="date_end" id=""
+                                    class="form-label fw-bolder @error('date_end') is-invalid @enderror">
+                                    Date Ended
+                                </label>
+                                <input type="date" class="form-control" name="date_end" id="date_end"
                                     aria-describedby="helpId" placeholder="" />
                                 @error('date_end')
                                     <div class="invalid-feedback">
@@ -171,6 +173,22 @@
                 allowClear: true
             });
         });
+
+        const today = new Date().toISOString().split('T')[0];
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        const tomorrowString = tomorrow.toISOString().split('T')[0];
+
+        // Set the min attribute of the start date to today
+        document.getElementById("date_end").setAttribute("min", tomorrowString);
+
+        // Set the min attribute of the end date when the start date changes
+        // document.getElementById("date_start").addEventListener("change", function() {
+        //     const dateNowTommoroe = this.value;
+        //     // Set the min for end date to the selected start date
+        //     document.getElementById("date_end").setAttribute("min", startDate);
+        // });
+
         document.addEventListener('DOMContentLoaded', function() {
 
             const firstSelect = document.getElementById('firstSelect');
@@ -207,31 +225,31 @@
                 }
             }
 
-             // Listen for changes on the radio buttons
-             probationRadio.addEventListener('change', toggleDateFields);
-             revokeRadio.addEventListener('change', toggleDateFields);
+            // Listen for changes on the radio buttons
+            probationRadio.addEventListener('change', toggleDateFields);
+            revokeRadio.addEventListener('change', toggleDateFields);
 
-             // Initialize the state on page load
-             toggleDateFields();
+            // Initialize the state on page load
+            toggleDateFields();
 
-             firstSelect.addEventListener('change', function() {
-                 // Clear all options in the second select
-                 secondSelect.innerHTML = '<option selected>Type of Offense</option>'; // Reset
+            firstSelect.addEventListener('change', function() {
+                // Clear all options in the second select
+                secondSelect.innerHTML = '<option selected>Type of Offense</option>'; // Reset
 
-                 if (firstSelect.value === 'grade') {
-                     // Show low grade options
-                     lowGradeOptions.forEach(option => {
-                         option.style.display = 'block';
-                         secondSelect.appendChild(option);
-                     });
-                 } else if (firstSelect.value === 'major') {
-                     // Show major offense options
-                     majorOffenseOptions.forEach(option => {
-                         option.style.display = 'block';
-                         secondSelect.appendChild(option);
-                     });
-                 }
-             });
+                if (firstSelect.value === 'grade') {
+                    // Show low grade options
+                    lowGradeOptions.forEach(option => {
+                        option.style.display = 'block';
+                        secondSelect.appendChild(option);
+                    });
+                } else if (firstSelect.value === 'major') {
+                    // Show major offense options
+                    majorOffenseOptions.forEach(option => {
+                        option.style.display = 'block';
+                        secondSelect.appendChild(option);
+                    });
+                }
+            });
         });
     </script>
 @endsection

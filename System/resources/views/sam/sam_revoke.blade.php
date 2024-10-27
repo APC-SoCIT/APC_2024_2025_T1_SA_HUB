@@ -55,13 +55,13 @@
                                     </td>
                                     <td class="table-border2 rounded text-center">
                                         <div class="row px-3">
-                                            @if ($sa->status == 'probation' || $sa->SaProfile->status == 'active')
+                                            @if ($sa->status == 'probation' || $sa->SaProfile->status == 'active' || $sa->status == 'pending_revoke')
                                                 <div class="col mb-1">
-                                                    <form action="{{ route('sa.manager.scholarship.probe', $sa->SaProfile->user_id) }}"
+                                                    <form action="{{ route('sa.manager.scholarship.revoke.cancel', ['saProfileID' => $sa->SaProfile->user_id, 'offenseId' => $sa->id]) }}"
                                                         method="post">
                                                         @csrf
                                                         <button type="submit" class="btn btn-secondary w-100">
-                                                            Probe
+                                                            Cancel
                                                         </button>
                                                     </form>
                                                 </div>

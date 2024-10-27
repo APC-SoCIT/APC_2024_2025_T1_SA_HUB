@@ -50,6 +50,7 @@ Route::group(['middleware' => ['auth']], function () {
 
     //Student Assistant Manager Routes
     Route::group(['middleware' => [RoleMiddleware::class . ':sa_manager']], function () {
+        Route::get('/sa_manager/dashboard', [SAManagerDashboardController::class, 'dashboard'])->name('sa.manager.dashboard');
         Route::get('/sa_manager/dashboard/on-going', [SAManagerDashboardController::class, 'onGoing'])->name('sa.manager.dashboard.ongoing');
         Route::get('/sa_manager/dashboard/done', [SAManagerDashboardController::class, 'finished'])->name('sa.manager.dashboard.done');
         Route::get('/sa_manager/probation', [SAManagerDashboardController::class, 'probation'])->name('sa.manager.probation');
@@ -63,6 +64,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::get('/sa_manager/revoke', [SAManagerDashboardController::class, 'revoke'])->name('sa.manager.revoke');
         Route::post('/sa_manager/scholarship/{saProfile}/probe', [SAManagerDashboardController::class, 'setToProbation'])->name('sa.manager.scholarship.probe');
         Route::post('/sa_manager/scholarship/{saProfile}/revoke', [SAManagerDashboardController::class, 'setToRevoke'])->name('sa.manager.scholarship.revoke');
+        Route::post('/sa_manager/scholarship/{saProfileID}/{offenseId}/revoke', [SAManagerDashboardController::class, 'cancelPendingRevoke'])->name('sa.manager.scholarship.revoke.cancel');
     });
 
     //Office Admin Routes
@@ -78,7 +80,7 @@ Route::group(['middleware' => ['auth']], function () {
         Route::post('/office_admin/{task}/cancel', [OfficeAdminDashboardController::class, 'cancel'])->name('office.cancel');
         Route::get('/office_admin/{taskId}/sa_list', [OfficeAdminDashboardController::class, 'taskSaList'])->name('office.saList');
         Route::get('/office_admin/{taskId}/sa_list_complete', [OfficeAdminDashboardController::class, 'taskSaListComplete'])->name('office.saList.complete');
-        Route::put('/office_admin/feedback', [OfficeAdminDashboardController::class, 'addFeedback'])->name('office.feedback');
+        Route::post('/office_admin/feedback', [OfficeAdminDashboardController::class, 'addFeedback'])->name('office.feedback');
     });
 
     //Reports
@@ -88,7 +90,7 @@ Route::group(['middleware' => ['auth']], function () {
     });
 
     // Guidance Routes
-    Route::group(['middleware' => [RoleMiddleware::class . 'guidance_office']], function () {
+    Route::group(['middleware' => [RoleMiddleware::class . ':guidance_office']], function () {
         Route::get('/guidance_office/dashboard', [GuidanceController::class, 'dashboard'])->name('guidance.dashboard');
         Route::get('/guidance_office/probation', [GuidanceController::class, 'probation'])->name('guidance.probation');
         Route::get('/guidance_office/scholarship', [GuidanceController::class, 'scholarship'])->name('guidance.scholarship');

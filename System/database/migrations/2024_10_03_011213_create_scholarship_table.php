@@ -14,7 +14,7 @@ return new class extends Migration
         Schema::create('scholarships', function (Blueprint $table) {
             $table->id();
             $table->string('stud_id');
-            $table->string('scholarship_status'); // Active, Probation, Revoked
+            $table->string('scholarship_status'); // Active, Probation, Revoked.
             $table->timestamps();
         });
     }

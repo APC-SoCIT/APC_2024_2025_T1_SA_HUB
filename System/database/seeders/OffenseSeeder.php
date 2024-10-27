@@ -47,7 +47,7 @@ class OffenseSeeder extends Seeder
                 'user_id' => 122, // Diana Prince
                 'type' => 'major',
                 'description' => 'Disrespect',
-                'status' => 'probation',
+                'status' => 'pending_revoke',
                 'date_start' => Carbon::now()->startOfWeek(),
                 'date_end' => Carbon::now()->startOfWeek()->addDays(rand(1, 5)),
             ],
@@ -55,19 +55,27 @@ class OffenseSeeder extends Seeder
                 'user_id' => 123, // Barry Allen
                 'type' => 'major',
                 'description' => 'Theft',
-                'status' => 'probation',
-                'date_start' => Carbon::now()->startOfWeek(),
-                'date_end' => Carbon::now()->startOfWeek()->addDays(rand(1, 5)),
+                'status' => 'pending_revoke',
+                'date_start' => null,
+                'date_end' => null,
             ],
         ];
 
         DB::table('offenses')->insert($offenses);
 
-        for ($userId = 119; $userId <= 123; $userId++) {
+        for ($userId = 119; $userId <= 121; $userId++) {
             $profile = SaProfile::where('user_id', $userId)->first();
 
             if ($profile) {
                 $profile->update(['status' => 'probation']);
+            }
+        }
+
+        for ($userId = 122; $userId <= 123; $userId++) {
+            $profile = SaProfile::where('user_id', $userId)->first();
+
+            if ($profile) {
+                $profile->update(['status' => 'pending_revoke']);
             }
         }
     }

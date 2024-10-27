@@ -60,14 +60,14 @@
                                             @if ($saList->time_in == null)
                                                 No Time-In Yet
                                             @else
-                                                {{ $saList->time_in }}
+                                                {{ $time_in->format('h:m a')}}
                                             @endif
                                         </td>
                                         <td class="table-border2 rounded text-center">
                                             @if ($saList->time_out == null)
                                                 No Time-Out Yet
                                             @else
-                                                {{ $saList->time_out }}
+                                                {{ $time_out->format('h:m a')}}
                                             @endif
                                         </td>
 
